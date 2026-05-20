@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EI Citation Generator - Vercel Edition</title>
+    <title>Academic & EU Law Citation Generator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .hidden-panel { display: none; }
@@ -14,7 +14,7 @@
 
     <div class="max-w-6xl mx-auto px-4 py-8">
         <header class="mb-8 text-center md:text-left border-b border-gray-200 pb-6">
-            <h1 class="text-3xl font-extrabold text-blue-900">EI Custom Citation Engine</h1>
+            <h1 class="text-3xl font-extrabold text-blue-900">Custom Citation Engine</h1>
             <p class="text-gray-600 mt-2 text-sm md:text-base">Europa-Institut compliant generator for international and EU legal research.</p>
         </header>
 
@@ -25,7 +25,7 @@
                     <label for="searchMode" class="block text-sm font-semibold text-gray-700 mb-2">Select Citation Input Mode:</label>
                     <select id="searchMode" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
                         <option value="academic">Option 1: Academic Search (OpenAlex API)</option>
-                        <option value="eu_law">Option 2: EU Document Ingestion (CELLAR API)</option>
+                        <option value="eu_law">Option 2: EU Document Ingestion (API/CELLAR Connection)</option>
                         <option value="manual">Option 3: Manual Entry Generator</option>
                     </select>
                 </div>
@@ -33,14 +33,14 @@
                 <div id="academicPanel" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
                     <h2 class="text-lg font-bold text-gray-800">Academic Database Query</h2>
                     <div class="flex gap-2">
-                        <input type="text" id="academicQuery" placeholder="Author, Title, or DOI..." class="flex-1 border border-gray-300 rounded-lg p-2.5 text-sm">
+                        <input type="text" id="academicQuery" placeholder="Enter book title, DOI, or author..." class="flex-1 border border-gray-300 rounded-lg p-2.5 text-sm">
                         <button onclick="performAcademicSearch()" class="bg-blue-800 text-white px-5 py-2.5 rounded-lg text-sm">Search</button>
                     </div>
                     <div id="academicResults" class="space-y-2 mt-4 max-h-60 overflow-y-auto hidden"></div>
                     <div id="academicPinpointRow" class="hidden-panel pt-4 border-t space-y-3">
                         <div id="academicArticleExtraFields" class="hidden-panel grid grid-cols-1 md:grid-cols-2 gap-3">
                             <input type="text" id="academicJournalAbbrev" placeholder="Journal Abbrev (e.g., JWT)" class="border rounded-lg p-2 text-sm bg-blue-50/50">
-                            <input type="text" id="academicJournalFull" placeholder="Full Journal Title" class="border rounded-lg p-2 text-sm">
+                            <input type="text" id="academicJournalFull" placeholder="Full Journal Name" class="border rounded-lg p-2 text-sm">
                         </div>
                         <div class="flex gap-4">
                             <input type="text" id="academicPageCited" placeholder="Cited Page" class="w-1/2 border rounded-lg p-2 text-sm">
@@ -52,7 +52,7 @@
                 <div id="euPanel" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4 hidden-panel">
                     <h2 class="text-lg font-bold text-gray-800">EU Document Ingestion Engine</h2>
                     <div class="space-y-3">
-                        <input type="text" id="euInputText" placeholder="CELEX (e.g., 32016R0802) or ECLI" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm">
+                        <input type="text" id="euInputText" placeholder="Enter CELEX (e.g., 32016R0802) or ECLI" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm">
                         <button onclick="processEUDocument()" class="w-full bg-blue-800 text-white p-2.5 rounded-lg text-sm flex items-center justify-center gap-2">
                             <span id="euBtnText">Fetch EI Metadata</span>
                             <span id="euSpinner" class="hidden w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -105,11 +105,11 @@
                     <div class="space-y-4">
                         <div>
                             <span class="text-xs font-bold text-gray-500 uppercase">Footnote</span>
-                            <div id="footnoteOutput" class="bg-gray-50 p-3 rounded border text-sm min-h-[50px] break-words"></div>
+                            <div id="footnoteOutput" class="bg-gray-50 p-3 rounded border text-sm min-h-[50px]"></div>
                         </div>
                         <div>
                             <span class="text-xs font-bold text-gray-500 uppercase">Bibliography</span>
-                            <div id="bibOutput" class="bg-gray-50 p-3 rounded border text-sm min-h-[50px] break-words"></div>
+                            <div id="bibOutput" class="bg-gray-50 p-3 rounded border text-sm min-h-[50px]"></div>
                         </div>
                     </div>
                     <button onclick="appendActiveToSessionList()" id="saveToSessionBtn" disabled class="w-full bg-gray-200 text-gray-400 py-2 rounded text-xs font-bold uppercase cursor-not-allowed">Add to Master List</button>
@@ -122,7 +122,7 @@
                 <h2 class="text-xl font-bold">Unified Paper Bibliography</h2>
                 <button onclick="copyMasterBibliographyText()" class="bg-blue-800 text-white px-4 py-2 rounded text-xs">Copy Full List</button>
             </div>
-            <div id="masterBibliographyContainer" class="text-sm text-gray-600">No citations committed yet.</div>
+            <div id="masterBibliographyContainer" class="text-sm text-gray-600">No citations added yet.</div>
         </section>
     </div>
 
@@ -132,33 +132,24 @@
         let temporaryAcademicSearchResults = [];
         let currentlySelectedAcademicItem = null;
 
-        // View Logic
+        // View Toggles
         document.getElementById('searchMode').addEventListener('change', (e) => {
             ['academicPanel', 'euPanel', 'manualPanel'].forEach(p => document.getElementById(p).classList.add('hidden-panel'));
             document.getElementById(e.target.value + 'Panel').classList.remove('hidden-panel');
             if(e.target.value === 'manual') toggleManualTypeForm();
         });
 
-        window.addEventListener('DOMContentLoaded', toggleManualTypeForm);
-
-        // Helper: Format Author Names according to EI Rules
+        // EI AUTHOR FORMATTING
         function formatAuthors(authorsArray, isFootnote) {
             if (!authorsArray || authorsArray.length === 0) return 'No author';
-            
-            if (isFootnote) {
-                // Footnote rule: Italicized surnames. If >3, use "et al."
-                if (authorsArray.length > 3) {
-                    return `<i>${authorsArray[0].split(',')[0]}</i> et al.`;
-                } else {
-                    return authorsArray.map(a => `<i>${a.split(',')[0]}</i>`).join('/');
-                }
-            } else {
-                // Bibliography rule: Full names (Surname, First Name) separated by /
-                return `<i>${authorsArray.join('/')}</i>`;
+            if (isFootnote && authorsArray.length > 3) {
+                return `<i>${authorsArray[0].split(',')[0]}</i> et al.`;
             }
+            const names = authorsArray.map(a => `<i>${a.split(',')[0]}</i>`);
+            return isFootnote ? names.join('/') : authorsArray.map(a => `<i>${a}</i>`).join(', ');
         }
 
-        // EU Extraction via Vercel Serverless Proxy
+        // EU API CONNECTION (api/cellar.js)
         async function processEUDocument() {
             const input = document.getElementById('euInputText').value.trim();
             if(!input) return;
@@ -170,21 +161,22 @@
             const sparql = `PREFIX cdm: <http://publications.europa.eu/ontology/cdm#> SELECT DISTINCT ?type ?celex ?ecli ?title ?date ?ojNum ?ojYear ?ojPage WHERE { { ?work cdm:resource_legal_id_celex "${input}"^^<http://www.w3.org/2001/XMLSchema#string> } UNION { ?work cdm:case-law_ecli "${input}"^^<http://www.w3.org/2001/XMLSchema#string> } OPTIONAL { ?work cdm:work_has_resource-type ?type_uri . BIND(STR(?type_uri) AS ?type) } OPTIONAL { ?work cdm:resource_legal_id_celex ?celex . } OPTIONAL { ?work cdm:case-law_ecli ?ecli . } OPTIONAL { ?work cdm:work_date_document ?date . } OPTIONAL { ?work cdm:work_has_expression ?expr . ?expr cdm:expression_uses_language <http://publications.europa.eu/resource/authority/language/ENG> . ?expr cdm:expression_title ?title . } OPTIONAL { ?work cdm:resource_legal_published_in_official-journal ?oj . OPTIONAL { ?oj cdm:official-journal_number ?ojNum . } OPTIONAL { ?oj cdm:official-journal_year ?ojYear . } OPTIONAL { ?oj cdm:official-journal_page ?ojPage . } } } LIMIT 1`;
 
             try {
+                // Connecting to your serverless backend route
                 const response = await fetch(`/api/cellar?query=${encodeURIComponent(sparql)}`);
                 const json = await response.json();
                 const data = json.results?.bindings?.[0];
-                if (!data) throw new Error("Metadata not found");
+                if (!data) throw new Error("Metadata not found in CELLAR.");
 
                 const celex = data.celex?.value || input;
+                const date = data.date?.value || "";
+                const year = date.split('-')[0];
                 const isCase = celex.startsWith('6') || data.ecli;
-                const rawDate = data.date?.value || "";
-                const year = rawDate.split('-')[0];
 
                 document.getElementById('euFormType').value = isCase ? (celex.includes('T-') ? 'judgment_egc' : 'judgment_ecj') : (celex.includes('R') ? 'regulation' : 'directive');
                 document.getElementById('euFormTitle').value = data.title?.value?.split(' - ')[0] || "";
-                document.getElementById('euFormDate').value = rawDate;
+                document.getElementById('euFormDate').value = date;
                 
-                // Numbering Logic: Switch for 2015 
+                // PRE/POST 2015 Numbering logic
                 if (!isCase) {
                     const seq = celex.substring(6);
                     document.getElementById('euFormNumber').value = (parseInt(year) >= 2015) ? `${year}/${parseInt(seq)}` : `${parseInt(seq)}/${year}`;
@@ -196,32 +188,30 @@
                 document.getElementById('euHydrationForm').classList.remove('hidden-panel');
                 btn.innerText = "Fetch EI Metadata";
             } catch (e) {
-                alert(e.message);
-                btn.innerText = "Fetch EI Metadata";
+                alert("API Error: " + e.message);
+                btn.innerText = "Retry Fetch";
             } finally {
                 spinner.classList.add('hidden');
             }
         }
 
-        // Citation Engine Logic
+        // CITATION ENGINE
         function computeCitation(item, previous) {
             let footnote = "";
             let bib = "";
             const isIbid = previous && previous.uniqueHash === item.uniqueHash;
 
             if (item.type === 'regulation' || item.type === 'directive') {
-                // Post-2015 vs Pre-2015 logic 
                 const isPost2015 = parseInt(item.year) >= 2015;
                 const label = item.type === 'regulation' ? 'Regulation' : 'Directive';
                 const prefix = (item.type === 'regulation' && !isPost2015) ? 'Council Regulation (EC) No ' : `${label} (EU) `;
-                
                 footnote = `${prefix}${item.number} of ${item.date} ${item.title}, ${item.journal}, (${item.pinpoint || 'Art. ...'}).`;
-                bib = footnote; // Per EI, legal acts cited identically in both
+                bib = footnote; // Per EI rules
             } 
             else if (item.type.startsWith('judgment')) {
                 const court = item.type.includes('ecj') ? 'ECJ' : 'EGC';
                 footnote = `${court}, Judgement of ${item.date}, Case ${item.number}, ${item.title}, ${item.journal}, para. ${item.pinpoint || '1'}.`;
-                bib = footnote;
+                bib = footnote; // Per EI rules
             }
             else if (item.type === 'book') {
                 const authorsFn = formatAuthors(item.authors, true);
@@ -233,15 +223,10 @@
                 footnote = isIbid ? `ibid., p. ${item.pageCited}.` : `${authorsFn}, ${item.journal} ${item.year}, p. ${item.startPage}, ${item.pageCited}.`;
                 bib = `${formatAuthors(item.authors, false)}, ${item.title}, in: ${item.journalLong}, ${item.year}, p. ${item.startPage}-${item.endPage}.`;
             }
-            else if (item.type === 'eu_doc') {
-                footnote = `European Commission, ${item.title}, ${item.number}, p. ${item.pinpoint || '...'}.`;
-                bib = footnote;
-            }
 
             return { footnote, bib };
         }
 
-        // Commits and State
         function renderActive(item) {
             activeGeneratedCitation = item;
             const prev = sessionCitationHistory.length > 0 ? sessionCitationHistory[sessionCitationHistory.length - 1] : null;
@@ -275,7 +260,7 @@
             const container = document.getElementById('masterBibliographyContainer');
             const items = sessionCitationHistory.map((item, idx) => ({
                 str: computeCitation(item, idx > 0 ? sessionCitationHistory[idx-1] : null).bib,
-                key: item.authors?.[0] || item.title || ""
+                key: (item.authors?.[0] || item.title || "").toLowerCase()
             }));
             items.sort((a, b) => a.key.localeCompare(b.key));
             container.innerHTML = `<ol class="list-decimal pl-5">${items.map(i => `<li class="mb-1">${i.str}</li>`).join('')}</ol>`;
@@ -304,7 +289,7 @@
             });
         }
 
-        // Academic Search (External API)
+        // Academic Search
         async function performAcademicSearch() {
             const q = document.getElementById('academicQuery').value;
             const div = document.getElementById('academicResults');
@@ -318,7 +303,7 @@
                         <b>${item.title}</b><br>${item.authorships.map(a => a.author.display_name).join(', ')}
                     </div>
                 `).join('');
-            } catch(e) { div.innerHTML = "Error loading results."; }
+            } catch(e) { div.innerHTML = "Search failed."; }
         }
 
         function selectAcademic(i) {
@@ -333,16 +318,16 @@
         function commitSelectedAcademicToSession() {
             const item = currentlySelectedAcademicItem;
             const authors = item.authorships.map(a => {
-                const parts = a.author.display_name.split(' ');
-                const last = parts.pop();
-                return `${last}, ${parts.join(' ')}`;
+                const p = a.author.display_name.split(' ');
+                const l = p.pop();
+                return `${l}, ${p.join(' ')}`;
             });
             renderActive({
                 type: item.type.includes('article') ? 'article' : 'book',
                 uniqueHash: 'acad-' + item.id,
                 authors: authors,
                 title: item.title,
-                shortTitle: item.title.substring(0, 20),
+                shortTitle: item.title.substring(0, 25),
                 year: item.publication_year,
                 journal: document.getElementById('academicJournalAbbrev').value,
                 journalLong: document.getElementById('academicJournalFull').value,
