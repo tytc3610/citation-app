@@ -3,15 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic & EU Law Citation Generator</title>
+    <title>EI Citation Generator - Vercel Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hidden-panel { display: none; }
+        i { font-style: italic; }
+    </style>
 </head>
 <body class="bg-gray-50 text-gray-900 min-h-screen font-sans">
 
     <div class="max-w-6xl mx-auto px-4 py-8">
         <header class="mb-8 text-center md:text-left border-b border-gray-200 pb-6">
             <h1 class="text-3xl font-extrabold text-blue-900">EI Custom Citation Engine</h1>
-            <p class="text-gray-600 mt-2 text-sm md:text-base">Strictly following Europa-Institut formatting standards for legal and academic documents.</p>
+            <p class="text-gray-600 mt-2 text-sm md:text-base">Europa-Institut compliant generator for international and EU legal research.</p>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -26,105 +30,99 @@
                     </select>
                 </div>
 
-                <div id="euPanel" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4 hidden">
-                    <h2 class="text-lg font-bold text-gray-800">EU Document Ingestion</h2>
-                    <p class="text-xs text-gray-500">Paste a CELEX (e.g., 32016R0679) or ECLI to pull EI-compliant metadata.</p>
+                <div id="academicPanel" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
+                    <h2 class="text-lg font-bold text-gray-800">Academic Database Query</h2>
+                    <div class="flex gap-2">
+                        <input type="text" id="academicQuery" placeholder="Author, Title, or DOI..." class="flex-1 border border-gray-300 rounded-lg p-2.5 text-sm">
+                        <button onclick="performAcademicSearch()" class="bg-blue-800 text-white px-5 py-2.5 rounded-lg text-sm">Search</button>
+                    </div>
+                    <div id="academicResults" class="space-y-2 mt-4 max-h-60 overflow-y-auto hidden"></div>
+                    <div id="academicPinpointRow" class="hidden-panel pt-4 border-t space-y-3">
+                        <div id="academicArticleExtraFields" class="hidden-panel grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <input type="text" id="academicJournalAbbrev" placeholder="Journal Abbrev (e.g., JWT)" class="border rounded-lg p-2 text-sm bg-blue-50/50">
+                            <input type="text" id="academicJournalFull" placeholder="Full Journal Title" class="border rounded-lg p-2 text-sm">
+                        </div>
+                        <div class="flex gap-4">
+                            <input type="text" id="academicPageCited" placeholder="Cited Page" class="w-1/2 border rounded-lg p-2 text-sm">
+                            <button onclick="commitSelectedAcademicToSession()" class="w-1/2 bg-emerald-700 text-white p-2 rounded-lg text-sm">Generate</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="euPanel" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4 hidden-panel">
+                    <h2 class="text-lg font-bold text-gray-800">EU Document Ingestion Engine</h2>
                     <div class="space-y-3">
-                        <input type="text" id="euInputText" placeholder="e.g., 32016R0679" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        <button onclick="processEUDocument()" class="w-full bg-blue-800 hover:bg-blue-950 text-white font-medium p-2.5 rounded-lg text-sm transition flex items-center justify-center gap-2">
+                        <input type="text" id="euInputText" placeholder="CELEX (e.g., 32016R0802) or ECLI" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm">
+                        <button onclick="processEUDocument()" class="w-full bg-blue-800 text-white p-2.5 rounded-lg text-sm flex items-center justify-center gap-2">
                             <span id="euBtnText">Fetch EI Metadata</span>
                             <span id="euSpinner" class="hidden w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                         </button>
                     </div>
 
-                    <div id="euHydrationForm" class="hidden pt-4 border-t border-gray-100 space-y-3">
-                        <div id="euExtractionBanner" class="p-2.5 rounded-lg text-xs font-medium border hidden"></div>
+                    <div id="euHydrationForm" class="hidden-panel pt-4 border-t space-y-3">
+                        <div id="euExtractionBanner" class="p-2.5 rounded-lg text-xs font-medium border"></div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs text-gray-600">Category:</label>
-                                <select id="euFormType" class="w-full border border-gray-300 rounded-lg p-2 text-sm bg-gray-50">
-                                    <option value="regulation">Regulation</option>
-                                    <option value="directive">Directive</option>
-                                    <option value="judgment_ecj">ECJ Judgment</option>
-                                    <option value="judgment_egc">EGC Judgment</option>
-                                    <option value="eu_doc">EU COM Document</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-600">EI ID (e.g. 2016/679):</label>
-                                <input type="text" id="euFormNumber" class="w-full border border-gray-300 rounded-lg p-2 text-sm bg-blue-50/30">
-                            </div>
+                            <select id="euFormType" class="border border-gray-300 rounded-lg p-2 text-sm">
+                                <option value="regulation">Regulation</option>
+                                <option value="directive">Directive</option>
+                                <option value="judgment_ecj">ECJ Judgment</option>
+                                <option value="judgment_egc">EGC Judgment</option>
+                                <option value="eu_doc">EU COM Document</option>
+                            </select>
+                            <input type="text" id="euFormNumber" placeholder="Number (e.g., 2016/802)" class="border rounded-lg p-2 text-sm bg-blue-50/30">
                         </div>
-                        <div>
-                            <label class="block text-xs text-gray-600">Document Title / Case Name:</label>
-                            <input type="text" id="euFormTitle" class="w-full border border-gray-300 rounded-lg p-2 text-sm bg-blue-50/30">
-                        </div>
+                        <input type="text" id="euFormTitle" placeholder="Full Title or Parties" class="w-full border rounded-lg p-2 text-sm bg-blue-50/30">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs text-gray-600">Full Date:</label>
-                                <input type="text" id="euFormDate" class="w-full border border-gray-300 rounded-lg p-2 text-sm bg-blue-50/30">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-600">OJ / ECLI Reference:</label>
-                                <input type="text" id="euFormJournalOrEcli" class="w-full border border-gray-300 rounded-lg p-2 text-sm bg-blue-50/30">
-                            </div>
+                            <input type="text" id="euFormDate" placeholder="Date (e.g., 11 May 2016)" class="border rounded-lg p-2 text-sm bg-blue-50/30">
+                            <input type="text" id="euFormJournalOrEcli" placeholder="OJ Ref or ECLI" class="border rounded-lg p-2 text-sm bg-blue-50/30">
                         </div>
-                        <div>
-                            <label class="block text-xs text-gray-600">Pinpoint (Art. / Para. / Recital):</label>
-                            <input type="text" id="euFormPinpoint" placeholder="e.g., Art. 5/recital 27" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
+                        <div class="flex gap-4">
+                            <input type="text" id="euFormPinpoint" placeholder="Art. / Para. / Recital" class="w-1/2 border rounded-lg p-2 text-sm">
+                            <button onclick="commitEUToSession()" class="w-1/2 bg-emerald-700 text-white p-2 rounded-lg text-sm">Generate</button>
                         </div>
-                        <button onclick="commitEUToSession()" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium p-2 rounded-lg text-sm transition">Generate Citations</button>
                     </div>
                 </div>
 
-                <div id="academicPanel" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-                    <h2 class="text-lg font-bold text-gray-800">Academic Search</h2>
-                    <div class="flex gap-2">
-                        <input type="text" id="academicQuery" placeholder="Author or Title..." class="flex-1 border border-gray-300 rounded-lg p-2.5 text-sm">
-                        <button onclick="performAcademicSearch()" class="bg-blue-800 text-white px-5 py-2.5 rounded-lg text-sm">Search</button>
+                <div id="manualPanel" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4 hidden-panel">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-lg font-bold text-gray-800">Manual Entry Builder</h2>
+                        <select id="manualTypeSelector" onchange="toggleManualTypeForm()" class="border rounded p-1 text-xs">
+                            <option value="book">Book</option>
+                            <option value="commentary">Commentary</option>
+                            <option value="collective">Collective Volume</option>
+                            <option value="article">Journal Article</option>
+                            <option value="internet">Internet Resource</option>
+                        </select>
                     </div>
-                    <div id="academicResults" class="space-y-2 mt-4 hidden"></div>
-                    <div id="academicPinpointRow" class="hidden space-y-3">
-                        <input type="text" id="academicPageCited" placeholder="Cited Page (e.g., 200)" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        <button onclick="commitSelectedAcademicToSession()" class="w-full bg-emerald-700 text-white p-2 rounded-lg text-sm">Generate</button>
-                    </div>
-                </div>
-
-                <div id="manualPanel" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hidden">
-                    <h2 class="text-lg font-bold text-gray-800 mb-4">Manual Entry</h2>
-                    <select id="manualTypeSelector" onchange="toggleManualTypeForm()" class="w-full mb-4 p-2 border rounded">
-                        <option value="book">Book</option>
-                        <option value="commentary">Commentary</option>
-                        <option value="collective">Collective Volume</option>
-                        <option value="article">Journal Article</option>
-                    </select>
                     <div id="manualDynamicFields" class="space-y-3"></div>
-                    <button onclick="commitManualToSession()" class="mt-4 w-full bg-emerald-700 text-white p-2 rounded">Generate</button>
+                    <button onclick="commitManualToSession()" class="w-full bg-emerald-700 text-white p-2 rounded-lg text-sm">Generate</button>
                 </div>
             </div>
 
             <div class="space-y-6">
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4 sticky top-6">
-                    <h2 class="text-lg font-bold text-gray-800">Outputs</h2>
-                    <div>
-                        <span class="text-xs font-bold text-gray-500 uppercase">Footnote</span>
-                        <div id="footnoteOutput" class="bg-gray-50 p-3 rounded border text-sm min-h-[50px] italic"></div>
-                    </div>
-                    <div>
-                        <span class="text-xs font-bold text-gray-500 uppercase">Bibliography</span>
-                        <div id="bibOutput" class="bg-gray-50 p-3 rounded border text-sm min-h-[50px]"></div>
+                    <h2 class="text-lg font-bold text-gray-800">Generated Citations</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <span class="text-xs font-bold text-gray-500 uppercase">Footnote</span>
+                            <div id="footnoteOutput" class="bg-gray-50 p-3 rounded border text-sm min-h-[50px] break-words"></div>
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold text-gray-500 uppercase">Bibliography</span>
+                            <div id="bibOutput" class="bg-gray-50 p-3 rounded border text-sm min-h-[50px] break-words"></div>
+                        </div>
                     </div>
                     <button onclick="appendActiveToSessionList()" id="saveToSessionBtn" disabled class="w-full bg-gray-200 text-gray-400 py-2 rounded text-xs font-bold uppercase cursor-not-allowed">Add to Master List</button>
                 </div>
             </div>
         </div>
 
-        <section class="mt-12 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <div class="flex justify-between items-center border-b pb-4 mb-4">
+        <section class="mt-12 bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
+            <div class="flex justify-between items-center border-b pb-4">
                 <h2 class="text-xl font-bold">Unified Paper Bibliography</h2>
-                <button onclick="copyMasterBibliographyText()" class="bg-blue-800 text-white px-4 py-2 rounded text-xs">Copy Bibliography</button>
+                <button onclick="copyMasterBibliographyText()" class="bg-blue-800 text-white px-4 py-2 rounded text-xs">Copy Full List</button>
             </div>
-            <div id="masterBibliographyContainer" class="text-sm text-gray-700">No citations added yet.</div>
+            <div id="masterBibliographyContainer" class="text-sm text-gray-600">No citations committed yet.</div>
         </section>
     </div>
 
@@ -134,14 +132,33 @@
         let temporaryAcademicSearchResults = [];
         let currentlySelectedAcademicItem = null;
 
-        // UI Toggles
+        // View Logic
         document.getElementById('searchMode').addEventListener('change', (e) => {
-            ['academicPanel', 'euPanel', 'manualPanel'].forEach(p => document.getElementById(p).classList.add('hidden'));
-            document.getElementById(e.target.value + 'Panel').classList.remove('hidden');
+            ['academicPanel', 'euPanel', 'manualPanel'].forEach(p => document.getElementById(p).classList.add('hidden-panel'));
+            document.getElementById(e.target.value + 'Panel').classList.remove('hidden-panel');
             if(e.target.value === 'manual') toggleManualTypeForm();
         });
 
-        // 1. EU EXTRACTION (USING PROXY)
+        window.addEventListener('DOMContentLoaded', toggleManualTypeForm);
+
+        // Helper: Format Author Names according to EI Rules
+        function formatAuthors(authorsArray, isFootnote) {
+            if (!authorsArray || authorsArray.length === 0) return 'No author';
+            
+            if (isFootnote) {
+                // Footnote rule: Italicized surnames. If >3, use "et al."
+                if (authorsArray.length > 3) {
+                    return `<i>${authorsArray[0].split(',')[0]}</i> et al.`;
+                } else {
+                    return authorsArray.map(a => `<i>${a.split(',')[0]}</i>`).join('/');
+                }
+            } else {
+                // Bibliography rule: Full names (Surname, First Name) separated by /
+                return `<i>${authorsArray.join('/')}</i>`;
+            }
+        }
+
+        // EU Extraction via Vercel Serverless Proxy
         async function processEUDocument() {
             const input = document.getElementById('euInputText').value.trim();
             if(!input) return;
@@ -151,56 +168,55 @@
             spinner.classList.remove('hidden');
 
             const sparql = `PREFIX cdm: <http://publications.europa.eu/ontology/cdm#> SELECT DISTINCT ?type ?celex ?ecli ?title ?date ?ojNum ?ojYear ?ojPage WHERE { { ?work cdm:resource_legal_id_celex "${input}"^^<http://www.w3.org/2001/XMLSchema#string> } UNION { ?work cdm:case-law_ecli "${input}"^^<http://www.w3.org/2001/XMLSchema#string> } OPTIONAL { ?work cdm:work_has_resource-type ?type_uri . BIND(STR(?type_uri) AS ?type) } OPTIONAL { ?work cdm:resource_legal_id_celex ?celex . } OPTIONAL { ?work cdm:case-law_ecli ?ecli . } OPTIONAL { ?work cdm:work_date_document ?date . } OPTIONAL { ?work cdm:work_has_expression ?expr . ?expr cdm:expression_uses_language <http://publications.europa.eu/resource/authority/language/ENG> . ?expr cdm:expression_title ?title . } OPTIONAL { ?work cdm:resource_legal_published_in_official-journal ?oj . OPTIONAL { ?oj cdm:official-journal_number ?ojNum . } OPTIONAL { ?oj cdm:official-journal_year ?ojYear . } OPTIONAL { ?oj cdm:official-journal_page ?ojPage . } } } LIMIT 1`;
-            
-            // Note: Replace '/api/cellar' with your Vercel URL if testing locally
+
             try {
                 const response = await fetch(`/api/cellar?query=${encodeURIComponent(sparql)}`);
                 const json = await response.json();
                 const data = json.results?.bindings?.[0];
-
-                if(!data) throw new Error("No metadata found");
+                if (!data) throw new Error("Metadata not found");
 
                 const celex = data.celex?.value || input;
                 const isCase = celex.startsWith('6') || data.ecli;
-                const dateRaw = data.date?.value || "";
-                const year = dateRaw.split('-')[0];
+                const rawDate = data.date?.value || "";
+                const year = rawDate.split('-')[0];
 
                 document.getElementById('euFormType').value = isCase ? (celex.includes('T-') ? 'judgment_egc' : 'judgment_ecj') : (celex.includes('R') ? 'regulation' : 'directive');
                 document.getElementById('euFormTitle').value = data.title?.value?.split(' - ')[0] || "";
-                document.getElementById('euFormDate').value = dateRaw;
+                document.getElementById('euFormDate').value = rawDate;
                 
-                // EI Formatting for Numbers
-                if(!isCase) {
-                    const sequential = celex.substring(6);
-                    document.getElementById('euFormNumber').value = (parseInt(year) >= 2015) ? `${year}/${parseInt(sequential)}` : `${parseInt(sequential)}/${year}`;
+                // Numbering Logic: Switch for 2015 
+                if (!isCase) {
+                    const seq = celex.substring(6);
+                    document.getElementById('euFormNumber').value = (parseInt(year) >= 2015) ? `${year}/${parseInt(seq)}` : `${parseInt(seq)}/${year}`;
                 } else {
                     document.getElementById('euFormNumber').value = data.ecli?.value || celex;
                 }
 
                 document.getElementById('euFormJournalOrEcli').value = data.ecli?.value || `OJ L ${data.ojNum?.value}, ${data.ojYear?.value}, p. ${data.ojPage?.value}`;
-                document.getElementById('euHydrationForm').classList.remove('hidden');
+                document.getElementById('euHydrationForm').classList.remove('hidden-panel');
                 btn.innerText = "Fetch EI Metadata";
-                spinner.classList.add('hidden');
-            } catch(e) {
-                alert("Error: " + e.message);
+            } catch (e) {
+                alert(e.message);
                 btn.innerText = "Fetch EI Metadata";
+            } finally {
                 spinner.classList.add('hidden');
             }
         }
 
-        // 2. CITATION LOGIC (EI SPECIFIC)
-        function computeCitations(item, prev = null) {
+        // Citation Engine Logic
+        function computeCitation(item, previous) {
             let footnote = "";
             let bib = "";
-            const isIbid = prev && prev.uniqueHash === item.uniqueHash;
+            const isIbid = previous && previous.uniqueHash === item.uniqueHash;
 
             if (item.type === 'regulation' || item.type === 'directive') {
+                // Post-2015 vs Pre-2015 logic 
                 const isPost2015 = parseInt(item.year) >= 2015;
-                const typeName = item.type === 'regulation' ? 'Regulation' : 'Directive';
-                const prefix = (item.type === 'regulation' && !isPost2015) ? 'Council Regulation (EC) No ' : `${typeName} (EU) `;
+                const label = item.type === 'regulation' ? 'Regulation' : 'Directive';
+                const prefix = (item.type === 'regulation' && !isPost2015) ? 'Council Regulation (EC) No ' : `${label} (EU) `;
                 
-                footnote = `${prefix}${item.number} of ${item.date} ${item.title}, ${item.journal}, (${item.pinpoint || 'Art./recital'}).`;
-                bib = footnote; // Legal acts match in both
+                footnote = `${prefix}${item.number} of ${item.date} ${item.title}, ${item.journal}, (${item.pinpoint || 'Art. ...'}).`;
+                bib = footnote; // Per EI, legal acts cited identically in both
             } 
             else if (item.type.startsWith('judgment')) {
                 const court = item.type.includes('ecj') ? 'ECJ' : 'EGC';
@@ -208,87 +224,131 @@
                 bib = footnote;
             }
             else if (item.type === 'book') {
-                const authorFootnote = formatAuthors(item.authors, true);
-                footnote = isIbid ? `ibid., p. ${item.pageCited}.` : `${authorFootnote}, ${item.shortTitle ? item.shortTitle + ', ' : ''}p. ${item.pageCited}.`;
+                const authorsFn = formatAuthors(item.authors, true);
+                footnote = isIbid ? `ibid., p. ${item.pageCited}.` : `${authorsFn}, ${item.shortTitle ? item.shortTitle + ', ' : ''}p. ${item.pageCited}.`;
                 bib = `${formatAuthors(item.authors, false)}, ${item.title}, ${item.edition ? item.edition + ', ' : ''}${item.place}, ${item.year}.`;
             }
             else if (item.type === 'article') {
-                const authorFootnote = formatAuthors(item.authors, true);
-                footnote = isIbid ? `ibid., p. ${item.pageCited}.` : `${authorFootnote}, ${item.journal} ${item.year}, p. ${item.startPage}, ${item.pageCited}.`;
+                const authorsFn = formatAuthors(item.authors, true);
+                footnote = isIbid ? `ibid., p. ${item.pageCited}.` : `${authorsFn}, ${item.journal} ${item.year}, p. ${item.startPage}, ${item.pageCited}.`;
                 bib = `${formatAuthors(item.authors, false)}, ${item.title}, in: ${item.journalLong}, ${item.year}, p. ${item.startPage}-${item.endPage}.`;
+            }
+            else if (item.type === 'eu_doc') {
+                footnote = `European Commission, ${item.title}, ${item.number}, p. ${item.pinpoint || '...'}.`;
+                bib = footnote;
             }
 
             return { footnote, bib };
         }
 
-        function formatAuthors(authors, forFootnote) {
-            if(!authors || authors.length === 0) return "No author";
-            if(forFootnote && authors.length > 3) return `<i>${authors[0].split(',')[0]}</i> et al.`;
-            const names = authors.map(a => forFootnote ? `<i>${a.split(',')[0]}</i>` : a);
-            return names.join(forFootnote ? '/' : ', ');
-        }
-
-        // State Management
-        function renderOutputs(item) {
+        // Commits and State
+        function renderActive(item) {
             activeGeneratedCitation = item;
             const prev = sessionCitationHistory.length > 0 ? sessionCitationHistory[sessionCitationHistory.length - 1] : null;
-            const res = computeCitations(item, prev);
+            const res = computeCitation(item, prev);
             document.getElementById('footnoteOutput').innerHTML = res.footnote;
             document.getElementById('bibOutput').innerHTML = res.bib;
             document.getElementById('saveToSessionBtn').disabled = false;
-            document.getElementById('saveToSessionBtn').classList.remove('bg-gray-200', 'text-gray-400', 'cursor-not-allowed');
-            document.getElementById('saveToSessionBtn').classList.add('bg-blue-800', 'text-white', 'cursor-pointer');
-        }
-
-        function appendActiveToSessionList() {
-            sessionCitationHistory.push(activeGeneratedCitation);
-            rebuildMasterBib();
-        }
-
-        function rebuildMasterBib() {
-            const container = document.getElementById('masterBibliographyContainer');
-            const items = sessionCitationHistory.map((item, idx) => ({
-                str: computeCitations(item, idx > 0 ? sessionCitationHistory[idx-1] : null).bib,
-                sortKey: item.authors?.[0] || item.title
-            }));
-            items.sort((a, b) => a.sortKey.localeCompare(b.sortKey));
-            container.innerHTML = `<ol class="list-decimal pl-5">${items.map(i => `<li class="mb-1">${i.str}</li>`).join('')}</ol>`;
+            document.getElementById('saveToSessionBtn').className = "w-full bg-blue-800 text-white py-2 rounded text-xs font-bold uppercase cursor-pointer";
         }
 
         function commitEUToSession() {
             const date = document.getElementById('euFormDate').value;
-            renderOutputs({
+            renderActive({
                 type: document.getElementById('euFormType').value,
                 uniqueHash: 'eu-' + document.getElementById('euFormNumber').value,
                 number: document.getElementById('euFormNumber').value,
                 title: document.getElementById('euFormTitle').value,
                 date: date,
-                year: date.split('-')[0],
+                year: date.split('-')[0] || date.split(' ').pop(),
                 journal: document.getElementById('euFormJournalOrEcli').value,
                 pinpoint: document.getElementById('euFormPinpoint').value
             });
         }
 
-        // Helper: Toggle Manual
+        function appendActiveToSessionList() {
+            sessionCitationHistory.push(activeGeneratedCitation);
+            rebuildMasterList();
+        }
+
+        function rebuildMasterList() {
+            const container = document.getElementById('masterBibliographyContainer');
+            const items = sessionCitationHistory.map((item, idx) => ({
+                str: computeCitation(item, idx > 0 ? sessionCitationHistory[idx-1] : null).bib,
+                key: item.authors?.[0] || item.title || ""
+            }));
+            items.sort((a, b) => a.key.localeCompare(b.key));
+            container.innerHTML = `<ol class="list-decimal pl-5">${items.map(i => `<li class="mb-1">${i.str}</li>`).join('')}</ol>`;
+        }
+
+        // Manual Helpers
         function toggleManualTypeForm() {
             const type = document.getElementById('manualTypeSelector').value;
             const container = document.getElementById('manualDynamicFields');
-            let html = `<div><label class="block text-xs">Author(s) (Surname, First Name; ...)</label><input type="text" id="mAuthors" class="w-full border p-2 text-sm"></div>`;
-            html += `<div><label class="block text-xs">Title</label><input type="text" id="mTitle" class="w-full border p-2 text-sm"></div>`;
-            if(type === 'book') html += `<div><label class="block text-xs">Place / Year / Page</label><div class="flex gap-2"><input id="mPlace" placeholder="Place" class="w-1/3 border p-2 text-sm"><input id="mYear" placeholder="Year" class="w-1/3 border p-2 text-sm"><input id="mPage" placeholder="Page" class="w-1/3 border p-2 text-sm"></div></div>`;
-            container.innerHTML = html;
+            let fields = `<div><label class="block text-xs">Authors (Surname, First Name; ...)</label><input id="mAuthors" class="w-full border p-2 text-sm"></div>`;
+            fields += `<div><label class="block text-xs">Title</label><input id="mTitle" class="w-full border p-2 text-sm"></div>`;
+            if (type === 'book') fields += `<div class="flex gap-2"><input id="mPlace" placeholder="Place" class="w-1/3 border p-2 text-sm"><input id="mYear" placeholder="Year" class="w-1/3 border p-2 text-sm"><input id="mPage" placeholder="Page" class="w-1/3 border p-2 text-sm"></div>`;
+            container.innerHTML = fields;
         }
 
         function commitManualToSession() {
-            const authors = document.getElementById('mAuthors').value.split(';').map(s => s.trim());
-            renderOutputs({
+            const authors = document.getElementById('mAuthors').value.split(';').map(a => a.trim());
+            renderActive({
                 type: document.getElementById('manualTypeSelector').value,
                 uniqueHash: 'man-' + document.getElementById('mTitle').value,
                 authors: authors,
                 title: document.getElementById('mTitle').value,
-                place: document.getElementById('mPlace')?.value || "",
-                year: document.getElementById('mYear')?.value || "",
-                pageCited: document.getElementById('mPage')?.value || ""
+                place: document.getElementById('mPlace')?.value,
+                year: document.getElementById('mYear')?.value,
+                pageCited: document.getElementById('mPage')?.value
+            });
+        }
+
+        // Academic Search (External API)
+        async function performAcademicSearch() {
+            const q = document.getElementById('academicQuery').value;
+            const div = document.getElementById('academicResults');
+            div.innerHTML = "Searching..."; div.classList.remove('hidden');
+            try {
+                const r = await fetch(`https://api.openalex.org/works?search=${encodeURIComponent(q)}&per_page=5`);
+                const d = await r.json();
+                temporaryAcademicSearchResults = d.results;
+                div.innerHTML = d.results.map((item, i) => `
+                    <div onclick="selectAcademic(${i})" class="p-2 border rounded cursor-pointer hover:bg-blue-50 text-xs">
+                        <b>${item.title}</b><br>${item.authorships.map(a => a.author.display_name).join(', ')}
+                    </div>
+                `).join('');
+            } catch(e) { div.innerHTML = "Error loading results."; }
+        }
+
+        function selectAcademic(i) {
+            currentlySelectedAcademicItem = temporaryAcademicSearchResults[i];
+            document.getElementById('academicPinpointRow').classList.remove('hidden-panel');
+            if (currentlySelectedAcademicItem.type.includes('article')) {
+                document.getElementById('academicArticleExtraFields').classList.remove('hidden-panel');
+                document.getElementById('academicJournalFull').value = currentlySelectedAcademicItem.primary_location?.source?.display_name || "";
+            }
+        }
+
+        function commitSelectedAcademicToSession() {
+            const item = currentlySelectedAcademicItem;
+            const authors = item.authorships.map(a => {
+                const parts = a.author.display_name.split(' ');
+                const last = parts.pop();
+                return `${last}, ${parts.join(' ')}`;
+            });
+            renderActive({
+                type: item.type.includes('article') ? 'article' : 'book',
+                uniqueHash: 'acad-' + item.id,
+                authors: authors,
+                title: item.title,
+                shortTitle: item.title.substring(0, 20),
+                year: item.publication_year,
+                journal: document.getElementById('academicJournalAbbrev').value,
+                journalLong: document.getElementById('academicJournalFull').value,
+                pageCited: document.getElementById('academicPageCited').value,
+                startPage: item.biblio?.first_page || "1",
+                endPage: item.biblio?.last_page || "10"
             });
         }
     </script>
