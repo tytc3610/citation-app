@@ -10,8 +10,8 @@
 
     <div class="max-w-6xl mx-auto px-4 py-8">
         <header class="mb-8 text-center md:text-left border-b border-gray-200 pb-6">
-            <h1 class="text-3xl font-extrabold text-blue-900">Custom Citation Engine</h1>
-            <p class="text-gray-600 mt-2 text-sm md:text-base">Tailored precisely to institutional formatting standards for legal documents, academic literature, and EU sources.</p>
+            <h1 class="text-3xl font-extrabold text-blue-900">EI Custom Citation Engine</h1>
+            <p class="text-gray-600 mt-2 text-sm md:text-base">Strictly following Europa-Institut formatting standards for legal and academic documents.</p>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -21,53 +21,18 @@
                     <label for="searchMode" class="block text-sm font-semibold text-gray-700 mb-2">Select Citation Input Mode:</label>
                     <select id="searchMode" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
                         <option value="academic">Option 1: Academic Search (OpenAlex API)</option>
-                        <option value="eu_law">Option 2: EU Document Ingestion (CELLAR SPARQL Query)</option>
+                        <option value="eu_law">Option 2: EU Document Ingestion (CELLAR API)</option>
                         <option value="manual">Option 3: Manual Entry Generator</option>
                     </select>
                 </div>
 
-                <div id="academicPanel" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-                    <h2 class="text-lg font-bold text-gray-800">Academic Database Query</h2>
-                    <p class="text-xs text-gray-500">Queries the open OpenAlex metadata repository for real-time indexing. Works serverless with browser-native CORS support.</p>
-                    <div class="flex gap-2">
-                        <input type="text" id="academicQuery" placeholder="Enter book title, essay name, DOI, or author..." class="flex-1 border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
-                        <button onclick="performAcademicSearch()" class="bg-blue-800 hover:bg-blue-950 text-white font-medium px-5 py-2.5 rounded-lg text-sm transition cursor-pointer">Search</button>
-                    </div>
-                    <div id="academicResults" class="space-y-2 mt-4 max-h-60 overflow-y-auto hidden"></div>
-                    
-                    <div id="academicPinpointRow" class="hidden pt-4 border-t border-gray-100 space-y-3">
-                        <div id="academicArticleExtraFields" class="hidden grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">Journal Abbreviation (Footnote Style):</label>
-                                <input type="text" id="academicJournalAbbrev" placeholder="e.g., JWT" class="w-full border border-gray-300 rounded-lg p-2 text-sm bg-blue-50/50">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">Full Journal Title (Bibliography Style):</label>
-                                <input type="text" id="academicJournalFull" placeholder="e.g., Journal of World Trade" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="w-1/2">
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">Cited Page / Location Number:</label>
-                                <input type="text" id="academicPageCited" placeholder="e.g., 941" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                            <div class="w-1/2 pt-5">
-                                <button onclick="commitSelectedAcademicToSession()" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium p-2 rounded-lg text-sm transition cursor-pointer">Generate Citations</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div id="euPanel" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4 hidden">
-                    <h2 class="text-lg font-bold text-gray-800">EU Document Semantic Ingestion Engine</h2>
-                    <p class="text-xs text-gray-500">Paste any official EUR-Lex URL link, CELEX number, or ECLI identifier string. The application queries the EU CELLAR graph database directly.</p>
+                    <h2 class="text-lg font-bold text-gray-800">EU Document Ingestion</h2>
+                    <p class="text-xs text-gray-500">Paste a CELEX (e.g., 32016R0679) or ECLI to pull EI-compliant metadata.</p>
                     <div class="space-y-3">
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">EUR-Lex URL or CELEX / ECLI String:</label>
-                            <input type="text" id="euInputText" placeholder="e.g., https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        </div>
-                        <button onclick="processEUDocument()" class="w-full bg-blue-800 hover:bg-blue-950 text-white font-medium p-2.5 rounded-lg text-sm transition cursor-pointer flex items-center justify-center gap-2">
-                            <span id="euBtnText">Execute CELLAR SPARQL Fetch</span>
+                        <input type="text" id="euInputText" placeholder="e.g., 32016R0679" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <button onclick="processEUDocument()" class="w-full bg-blue-800 hover:bg-blue-950 text-white font-medium p-2.5 rounded-lg text-sm transition flex items-center justify-center gap-2">
+                            <span id="euBtnText">Fetch EI Metadata</span>
                             <span id="euSpinner" class="hidden w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                         </button>
                     </div>
@@ -76,122 +41,91 @@
                         <div id="euExtractionBanner" class="p-2.5 rounded-lg text-xs font-medium border hidden"></div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs text-gray-600">Document Classification Category:</label>
+                                <label class="block text-xs text-gray-600">Category:</label>
                                 <select id="euFormType" class="w-full border border-gray-300 rounded-lg p-2 text-sm bg-gray-50">
-                                    <option value="regulation">Regulation (EU / Council EC)</option>
-                                    <option value="directive">Directive (EU / EC)</option>
+                                    <option value="regulation">Regulation</option>
+                                    <option value="directive">Directive</option>
                                     <option value="judgment_ecj">ECJ Judgment</option>
                                     <option value="judgment_egc">EGC Judgment</option>
-                                    <option value="eu_doc">Official EU Document (COM / Commission)</option>
-                                    <option value="oj_reference">Official Journal Standard Entry</option>
+                                    <option value="eu_doc">EU COM Document</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs text-gray-600">Official Reference Identifier Number:</label>
+                                <label class="block text-xs text-gray-600">EI ID (e.g. 2016/679):</label>
                                 <input type="text" id="euFormNumber" class="w-full border border-gray-300 rounded-lg p-2 text-sm bg-blue-50/30">
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs text-gray-600">Official Document or Case Title String:</label>
+                            <label class="block text-xs text-gray-600">Document Title / Case Name:</label>
                             <input type="text" id="euFormTitle" class="w-full border border-gray-300 rounded-lg p-2 text-sm bg-blue-50/30">
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs text-gray-600">Official Publication / Judgment Date:</label>
-                                <input type="text" id="euFormDate" placeholder="e.g., 11 May 2016" class="w-full border border-gray-300 rounded-lg p-2 text-sm bg-blue-50/30">
+                                <label class="block text-xs text-gray-600">Full Date:</label>
+                                <input type="text" id="euFormDate" class="w-full border border-gray-300 rounded-lg p-2 text-sm bg-blue-50/30">
                             </div>
                             <div>
-                                <label class="block text-xs text-gray-600">Official Journal (OJ) or ECLI Details:</label>
-                                <input type="text" id="euFormJournalOrEcli" placeholder="e.g., OJ L 132, 21/05/2016, p. 58" class="w-full border border-gray-300 rounded-lg p-2 text-sm bg-blue-50/30">
+                                <label class="block text-xs text-gray-600">OJ / ECLI Reference:</label>
+                                <input type="text" id="euFormJournalOrEcli" class="w-full border border-gray-300 rounded-lg p-2 text-sm bg-blue-50/30">
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs text-gray-600">Pinpoint Target Context (Art / Recital / Para):</label>
-                                <input type="text" id="euFormPinpoint" placeholder="e.g., Art. 5/recital 27" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                            <div class="pt-5">
-                                <button onclick="commitEUToSession()" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium p-2 rounded-lg text-sm transition cursor-pointer">Generate Citations</button>
-                            </div>
+                        <div>
+                            <label class="block text-xs text-gray-600">Pinpoint (Art. / Para. / Recital):</label>
+                            <input type="text" id="euFormPinpoint" placeholder="e.g., Art. 5/recital 27" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
                         </div>
+                        <button onclick="commitEUToSession()" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium p-2 rounded-lg text-sm transition">Generate Citations</button>
                     </div>
                 </div>
 
-                <div id="manualPanel" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4 hidden">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-lg font-bold text-gray-800">Granular Manual Source Builder</h2>
-                        <select id="manualTypeSelector" onchange="toggleManualTypeForm()" class="bg-gray-50 border border-gray-300 rounded-lg p-1.5 text-xs font-medium text-gray-700">
-                            <option value="book">Book / Monograph</option>
-                            <option value="commentary">Commentary Volume</option>
-                            <option value="collective">Collective / Commemorative Volume</option>
-                            <option value="article">Journal Article / Essay / E-Journal</option>
-                            <option value="internet">Internet Resource Listing</option>
-                            <option value="un_doc">United Nations Official Document</option>
-                        </select>
+                <div id="academicPanel" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
+                    <h2 class="text-lg font-bold text-gray-800">Academic Search</h2>
+                    <div class="flex gap-2">
+                        <input type="text" id="academicQuery" placeholder="Author or Title..." class="flex-1 border border-gray-300 rounded-lg p-2.5 text-sm">
+                        <button onclick="performAcademicSearch()" class="bg-blue-800 text-white px-5 py-2.5 rounded-lg text-sm">Search</button>
                     </div>
+                    <div id="academicResults" class="space-y-2 mt-4 hidden"></div>
+                    <div id="academicPinpointRow" class="hidden space-y-3">
+                        <input type="text" id="academicPageCited" placeholder="Cited Page (e.g., 200)" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
+                        <button onclick="commitSelectedAcademicToSession()" class="w-full bg-emerald-700 text-white p-2 rounded-lg text-sm">Generate</button>
+                    </div>
+                </div>
+
+                <div id="manualPanel" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hidden">
+                    <h2 class="text-lg font-bold text-gray-800 mb-4">Manual Entry</h2>
+                    <select id="manualTypeSelector" onchange="toggleManualTypeForm()" class="w-full mb-4 p-2 border rounded">
+                        <option value="book">Book</option>
+                        <option value="commentary">Commentary</option>
+                        <option value="collective">Collective Volume</option>
+                        <option value="article">Journal Article</option>
+                    </select>
                     <div id="manualDynamicFields" class="space-y-3"></div>
-                    <div class="pt-4 border-t border-gray-100 text-right">
-                        <button onclick="commitManualToSession()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-medium px-6 py-2 rounded-lg text-sm transition cursor-pointer">Generate Citations</button>
-                    </div>
+                    <button onclick="commitManualToSession()" class="mt-4 w-full bg-emerald-700 text-white p-2 rounded">Generate</button>
                 </div>
             </div>
 
             <div class="space-y-6">
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4 sticky top-6">
-                    <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                        <span class="w-2 h-2 bg-blue-600 rounded-full"></span> Active Generated Strings
-                    </h2>
-                    <div class="space-y-4">
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="text-xs font-bold text-gray-500 tracking-wider uppercase">Formatted Footnote Output</span>
-                                <button onclick="copyToClipboard('footnoteOutput')" class="text-xs text-blue-700 font-medium hover:underline cursor-pointer">Copy</button>
-                            </div>
-                            <div id="footnoteOutput" class="bg-gray-50 p-3 rounded-lg border border-gray-200 text-sm text-gray-800 min-h-[50px] break-words">
-                                No data loaded yet. Use an input panel to generate content.
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="text-xs font-bold text-gray-500 tracking-wider uppercase">Formatted Bibliography Entry</span>
-                                <button onclick="copyToClipboard('bibOutput')" class="text-xs text-blue-700 font-medium hover:underline cursor-pointer">Copy</button>
-                            </div>
-                            <div id="bibOutput" class="bg-gray-50 p-3 rounded-lg border border-gray-200 text-sm text-gray-800 min-h-[50px] break-words">
-                                No data loaded yet. Use an input panel to generate content.
-                            </div>
-                        </div>
+                    <h2 class="text-lg font-bold text-gray-800">Outputs</h2>
+                    <div>
+                        <span class="text-xs font-bold text-gray-500 uppercase">Footnote</span>
+                        <div id="footnoteOutput" class="bg-gray-50 p-3 rounded border text-sm min-h-[50px] italic"></div>
                     </div>
-                    <div class="pt-4 border-t border-gray-100 flex gap-2">
-                        <button onclick="appendActiveToSessionList()" id="saveToSessionBtn" disabled class="flex-1 bg-blue-200 text-gray-400 font-medium py-2 rounded-lg text-xs tracking-wide text-center transition uppercase cursor-not-allowed">
-                            Add to Session Master List
-                        </button>
-                        <button onclick="clearActiveCitationOutput()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium px-3 py-2 rounded-lg text-xs transition uppercase cursor-pointer">
-                            Clear
-                        </button>
+                    <div>
+                        <span class="text-xs font-bold text-gray-500 uppercase">Bibliography</span>
+                        <div id="bibOutput" class="bg-gray-50 p-3 rounded border text-sm min-h-[50px]"></div>
                     </div>
+                    <button onclick="appendActiveToSessionList()" id="saveToSessionBtn" disabled class="w-full bg-gray-200 text-gray-400 py-2 rounded text-xs font-bold uppercase cursor-not-allowed">Add to Master List</button>
                 </div>
             </div>
         </div>
 
-        <section class="mt-12 bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-100 pb-4 gap-4">
-                <div>
-                    <h2 class="text-xl font-bold text-gray-800">Unified Paper Bibliography</h2>
-                    <p class="text-xs text-gray-500 mt-0.5">Aggregates and dynamically alphabetizes citations across all types with no categorical sub-divisions.</p>
-                </div>
-                <div class="flex gap-2 w-full sm:w-auto">
-                    <button onclick="copyMasterBibliographyText()" class="flex-1 sm:flex-initial bg-blue-800 hover:bg-blue-950 text-white font-medium px-4 py-2 rounded-lg text-xs transition cursor-pointer">
-                        Copy Complete Bibliography
-                    </button>
-                    <button onclick="clearSessionMasterList()" class="bg-red-50 hover:bg-red-100 text-red-600 font-medium px-4 py-2 rounded-lg text-xs transition cursor-pointer">
-                        Reset List
-                    </button>
-                </div>
+        <section class="mt-12 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div class="flex justify-between items-center border-b pb-4 mb-4">
+                <h2 class="text-xl font-bold">Unified Paper Bibliography</h2>
+                <button onclick="copyMasterBibliographyText()" class="bg-blue-800 text-white px-4 py-2 rounded text-xs">Copy Bibliography</button>
             </div>
-            <div id="masterBibliographyContainer" class="text-sm text-gray-600">
-                No active citations committed to the master session pool yet.
-            </div>
-        </section> 
+            <div id="masterBibliographyContainer" class="text-sm text-gray-700">No citations added yet.</div>
+        </section>
     </div>
 
     <script>
@@ -200,824 +134,162 @@
         let temporaryAcademicSearchResults = [];
         let currentlySelectedAcademicItem = null;
 
-        document.getElementById('searchMode').addEventListener('change', function(e) {
-            document.getElementById('academicPanel').classList.add('hidden');
-            document.getElementById('euPanel').classList.add('hidden');
-            document.getElementById('manualPanel').classList.add('hidden');
-
-            if (e.target.value === 'academic') {
-                document.getElementById('academicPanel').classList.remove('hidden');
-            } else if (e.target.value === 'eu_law') {
-                document.getElementById('euPanel').classList.remove('hidden');
-            } else if (e.target.value === 'manual') {
-                document.getElementById('manualPanel').classList.remove('hidden');
-                toggleManualTypeForm();
-            }
+        // UI Toggles
+        document.getElementById('searchMode').addEventListener('change', (e) => {
+            ['academicPanel', 'euPanel', 'manualPanel'].forEach(p => document.getElementById(p).classList.add('hidden'));
+            document.getElementById(e.target.value + 'Panel').classList.remove('hidden');
+            if(e.target.value === 'manual') toggleManualTypeForm();
         });
 
-        window.addEventListener('DOMContentLoaded', () => {
-            toggleManualTypeForm();
-        });
-
-        function copyToClipboard(elementId) {
-            const el = document.getElementById(elementId);
-            if (!el || el.innerText.includes("No data loaded yet")) return;
-            
-            const html = el.innerHTML;
-            const text = el.innerText;
-            
-            const blobHtml = new Blob([html], { type: 'text/html' });
-            const blobText = new Blob([text], { type: 'text/plain' });
-            const data = [new ClipboardItem({ 'text/html': blobHtml, 'text/plain': blobText })];
-            
-            navigator.clipboard.write(data).then(() => {
-                alert("Formatted text successfully copied with formatting preserved.");
-            }).catch(() => {
-                navigator.clipboard.writeText(text).then(() => {
-                    alert("Text copied as plain text.");
-                });
-            });
-        }
-
-        function cleanString(str) {
-            return str ? str.trim().replace(/\s+/g, ' ') : '';
-        }
-
-        function parseAuthorsString(authorStr) {
-            if (!authorStr || authorStr.trim() === "") return [];
-            return authorStr.split(';').map(a => cleanString(a)).filter(a => a.length > 0);
-        }
-
-        // Auto-generation logic for journal abbreviations
-        function generateAbbreviation(title) {
-            if (!title) return '';
-            if (title.length <= 5) return title.toUpperCase();
-            const stopWords = ['of', 'and', 'the', 'in', 'on', 'for', 'a', 'an', 'to', 'de', 'with'];
-            const cleanTitle = title.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
-            return cleanTitle
-                .split(/\s+/)
-                .filter(word => word.length > 0 && !stopWords.includes(word.toLowerCase()))
-                .map(word => word[0].toUpperCase())
-                .join('');
-        }
-
-        function getSurname(fullName) {
-            if (!fullName) return '';
-            if (fullName.includes(',')) {
-                return cleanString(fullName.split(',')[0]);
-            }
-            const parts = fullName.split(' ');
-            return cleanString(parts[parts.length - 1]);
-        }
-
-        function formatAuthorsForFootnote(authorsArray) {
-            if (!authorsArray || authorsArray.length === 0) return 'No author';
-            if (authorsArray.length > 3) {
-                return `<i>${getSurname(authorsArray[0])}</i> et al.`;
-            } else {
-                return `<i>${authorsArray.map(a => getSurname(a)).join('/')}</i>`;
-            }
-        }
-
-        function formatAuthorsForBibliography(authorsArray) {
-            if (!authorsArray || authorsArray.length === 0) return 'No author';
-            return `<i>${authorsArray.join('/')}</i>`;
-        }
-
-        function displayEUBanner(type, message) {
-            const banner = document.getElementById('euExtractionBanner');
-            banner.classList.remove('hidden');
-            
-            if (type === 'success') {
-                banner.className = "p-2.5 rounded-lg text-xs font-medium border bg-emerald-50 text-emerald-800 border-emerald-200 block";
-            } else if (type === 'no_results' || type === 'fallback' || type === 'timeout') {
-                banner.className = "p-2.5 rounded-lg text-xs font-medium border bg-amber-50 text-amber-800 border-amber-200 block";
-            } else {
-                banner.className = "p-2.5 rounded-lg text-xs font-medium border bg-red-50 text-red-800 border-red-200 block";
-            }
-            banner.innerText = message;
-        }
-
-        // OPTION 2 LOGIC ENGINE: COMMUNICATES DIRECTLY WITH THE INTERIOR SERVERLESS API ROUTE
+        // 1. EU EXTRACTION (USING PROXY)
         async function processEUDocument() {
             const input = document.getElementById('euInputText').value.trim();
             if(!input) return;
-
-            const btnText = document.getElementById('euBtnText');
+            const btn = document.getElementById('euBtnText');
             const spinner = document.getElementById('euSpinner');
-
-            btnText.innerText = "Processing via Serverless Engine...";
+            btn.innerText = "Querying CELLAR...";
             spinner.classList.remove('hidden');
 
-            let identifier = input;
-            const celexMatch = input.match(/CELEX:([A-Z0-9]+)/i);
-            const ecliMatch = input.match(/ECLI:EU:[A-Z]:\d+:\d+/i);
-
-            if (celexMatch) identifier = celexMatch[1].toUpperCase();
-            else if (ecliMatch) identifier = ecliMatch[0].toUpperCase();
-            else if (/^[0-9][A-Z0-9]{9,12}/i.test(input)) identifier = input.toUpperCase();
-            else if (/^ECLI:[A-Z0-9:]+/i.test(input)) identifier = input.toUpperCase();
-
-            const sparqlQuery = `
-                PREFIX cdm: <http://publications.europa.eu/ontology/cdm#>
-                SELECT DISTINCT ?type ?celex ?ecli ?title ?date ?ojNum ?ojYear ?ojPage WHERE {
-                    { ?work cdm:resource_legal_id_celex "${identifier}"^^<http://www.w3.org/2001/XMLSchema#string> }
-                    UNION
-                    { ?work cdm:case-law_ecli "${identifier}"^^<http://www.w3.org/2001/XMLSchema#string> }
-                    OPTIONAL { ?work cdm:work_has_resource-type ?type_uri . BIND(STR(?type_uri) AS ?type) }
-                    OPTIONAL { ?work cdm:resource_legal_id_celex ?celex . }
-                    OPTIONAL { ?work cdm:case-law_ecli ?ecli . }
-                    OPTIONAL { ?work cdm:work_date_document ?date . }
-                    OPTIONAL {
-                        ?work cdm:work_has_expression ?expr .
-                        ?expr cdm:expression_uses_language <http://publications.europa.eu/resource/authority/language/ENG> .
-                        ?expr cdm:expression_title ?title .
-                    }
-                    OPTIONAL {
-                        ?work cdm:resource_legal_published_in_official-journal ?oj .
-                        OPTIONAL { ?oj cdm:official-journal_number ?ojNum . }
-                        OPTIONAL { ?oj cdm:official-journal_year ?ojYear . }
-                        OPTIONAL { ?oj cdm:official-journal_page ?ojPage . }
-                    }
-                } LIMIT 1
-            `;
-
-            // FIX: Targets domestic proxy route relative to host system domain, eliminating browser CORS blocks completely
-            const proxyUrl = `/api/cellar?query=${encodeURIComponent(cleanString(sparqlQuery))}`;
-
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 20000); // 20-second threshold execution limit
-
+            const sparql = `PREFIX cdm: <http://publications.europa.eu/ontology/cdm#> SELECT DISTINCT ?type ?celex ?ecli ?title ?date ?ojNum ?ojYear ?ojPage WHERE { { ?work cdm:resource_legal_id_celex "${input}"^^<http://www.w3.org/2001/XMLSchema#string> } UNION { ?work cdm:case-law_ecli "${input}"^^<http://www.w3.org/2001/XMLSchema#string> } OPTIONAL { ?work cdm:work_has_resource-type ?type_uri . BIND(STR(?type_uri) AS ?type) } OPTIONAL { ?work cdm:resource_legal_id_celex ?celex . } OPTIONAL { ?work cdm:case-law_ecli ?ecli . } OPTIONAL { ?work cdm:work_date_document ?date . } OPTIONAL { ?work cdm:work_has_expression ?expr . ?expr cdm:expression_uses_language <http://publications.europa.eu/resource/authority/language/ENG> . ?expr cdm:expression_title ?title . } OPTIONAL { ?work cdm:resource_legal_published_in_official-journal ?oj . OPTIONAL { ?oj cdm:official-journal_number ?ojNum . } OPTIONAL { ?oj cdm:official-journal_year ?ojYear . } OPTIONAL { ?oj cdm:official-journal_page ?ojPage . } } } LIMIT 1`;
+            
+            // Note: Replace '/api/cellar' with your Vercel URL if testing locally
             try {
-                const response = await fetch(proxyUrl, { signal: controller.signal });
-                clearTimeout(timeoutId);
-
-                if (!response.ok) {
-                    displayEUBanner("network_down", `Upstream Alert: Serverless proxy returned code status ${response.status}. Dropping to fallback structural parsers.`);
-                    executeLocalFallbackDecoder(identifier);
-                    return;
-                }
-                
+                const response = await fetch(`/api/cellar?query=${encodeURIComponent(sparql)}`);
                 const json = await response.json();
-                const bindings = json.results?.bindings?.[0];
+                const data = json.results?.bindings?.[0];
 
-                if (!bindings) {
-                    displayEUBanner("no_results", "⚠️ Connected to CELLAR via middleware, but layout fields are unbound. Estimating layout structures locally.");
-                    executeLocalFallbackDecoder(identifier);
-                    return;
-                }
+                if(!data) throw new Error("No metadata found");
 
-                let title = bindings.title?.value || "";
-                let date = bindings.date?.value || "";
-                let celexId = bindings.celex?.value || identifier;
-                let ecliCode = bindings.ecli?.value || "";
-                let ojNum = bindings.ojNum?.value || "";
-                let ojYear = bindings.ojYear?.value || "";
-                let ojPage = bindings.ojPage?.value || "";
+                const celex = data.celex?.value || input;
+                const isCase = celex.startsWith('6') || data.ecli;
+                const dateRaw = data.date?.value || "";
+                const year = dateRaw.split('-')[0];
 
-                if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-                    const dateObj = new Date(date);
-                    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                    date = `${dateObj.getDate()} ${months[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
-                }
-
-                if (title.includes(" - EN - ")) title = title.split(" - EN - ")[0];
-                title = cleanString(title);
-
-                let ojReference = "";
-                if (ojNum && ojYear) {
-                    ojReference = `OJ L ${ojNum}, ${ojYear}`;
-                    if (ojPage) ojReference += `, p. ${ojPage}`;
-                } else if (ecliCode) {
-                    ojReference = ecliCode;
-                }
-
-                let docType = "regulation";
-                let docNum = celexId;
-
-                const sector = celexId.charAt(0);
-                const year = celexId.substring(1, 5);
-                const typeChar = celexId.charAt(5);
-                const sequentialDocNum = parseInt(celexId.substring(6), 10) || celexId.substring(6);
-
-                if (sector === '3') {
-                    docType = (typeChar === 'R') ? 'regulation' : 'directive';
-                    docNum = (typeChar === 'R') ? `${sequentialDocNum}/${year}` : `${year}/${sequentialDocNum}`;
-                } else if (sector === '6' || ecliCode) {
-                    docType = (celexId.charAt(5) === 'T' || ecliCode.includes(':T:')) ? 'judgment_egc' : 'judgment_ecj';
-                    docNum = celexId.length >= 10 ? `${celexId.charAt(5) === 'T' ? 'T' : 'C'}-${sequentialDocNum}/${year.substring(2)}` : identifier;
-                } else if (sector === '5') {
-                    docType = "eu_doc";
-                    docNum = `COM(${year}) ${sequentialDocNum} final`;
-                }
-
-                document.getElementById('euFormType').value = docType;
-                document.getElementById('euFormNumber').value = docNum;
-                document.getElementById('euFormTitle').value = title;
-                document.getElementById('euFormDate').value = date;
-                document.getElementById('euFormJournalOrEcli').value = ojReference;
-
-                displayEUBanner("success", "✓ Connected via secure serverless proxy. Retrieved complete legal document graphs.");
-                document.getElementById('euHydrationForm').classList.remove('hidden');
-
-            } catch (err) {
-                clearTimeout(timeoutId);
-                console.error("Tracing network path exception:", err);
+                document.getElementById('euFormType').value = isCase ? (celex.includes('T-') ? 'judgment_egc' : 'judgment_ecj') : (celex.includes('R') ? 'regulation' : 'directive');
+                document.getElementById('euFormTitle').value = data.title?.value?.split(' - ')[0] || "";
+                document.getElementById('euFormDate').value = dateRaw;
                 
-                if (err.name === 'AbortError') {
-                    displayEUBanner("timeout", "⚠️ Middleware connection limits bypassed threshold window (20s). Utilizing local estimation layout blocks.");
+                // EI Formatting for Numbers
+                if(!isCase) {
+                    const sequential = celex.substring(6);
+                    document.getElementById('euFormNumber').value = (parseInt(year) >= 2015) ? `${year}/${parseInt(sequential)}` : `${parseInt(sequential)}/${year}`;
                 } else {
-                    displayEUBanner("fallback", "⚠️ Core connection network drop. Activating local blueprint layout engines.");
+                    document.getElementById('euFormNumber').value = data.ecli?.value || celex;
                 }
-                executeLocalFallbackDecoder(identifier);
-            } finally {
-                btnText.innerText = "Execute CELLAR SPARQL Fetch";
+
+                document.getElementById('euFormJournalOrEcli').value = data.ecli?.value || `OJ L ${data.ojNum?.value}, ${data.ojYear?.value}, p. ${data.ojPage?.value}`;
+                document.getElementById('euHydrationForm').classList.remove('hidden');
+                btn.innerText = "Fetch EI Metadata";
+                spinner.classList.add('hidden');
+            } catch(e) {
+                alert("Error: " + e.message);
+                btn.innerText = "Fetch EI Metadata";
                 spinner.classList.add('hidden');
             }
         }
 
-        function executeLocalFallbackDecoder(identifier) {
-            let docType = "regulation"; let docNum = identifier; let yearStr = "no publication date/year"; let titleStr = "";
-
-            if (identifier && identifier.length >= 10) {
-                const sector = identifier.charAt(0);
-                const year = identifier.substring(1, 5);
-                const typeChar = identifier.charAt(5);
-                const docNumRaw = identifier.substring(6);
-                const sequentialDocNum = parseInt(docNumRaw, 10) || docNumRaw;
-                yearStr = year;
-
-                if (sector === '3') {
-                    docType = (typeChar === 'R') ? 'regulation' : 'directive';
-                    docNum = (typeChar === 'R') ? `${sequentialDocNum}/${year}` : `${year}/${sequentialDocNum}`;
-                    titleStr = (typeChar === 'R') ? `Council Regulation (EC) No ${docNum}` : `Directive (EU) ${docNum}`;
-                } else if (sector === '6') {
-                    docType = (typeChar === 'T') ? 'judgment_egc' : 'judgment_ecj';
-                    docNum = `${typeChar === 'T' ? 'T' : 'C'}-${sequentialDocNum}/${year.substring(2)}`;
-                    titleStr = `Case ${docNum}`;
-                } else if (sector === '5') {
-                    docType = "eu_doc";
-                    docNum = `COM(${year}) ${sequentialDocNum}`;
-                    titleStr = `Commission Document COM(${year}) ${sequentialDocNum}`;
-                }
-            }
-
-            document.getElementById('euFormType').value = docType;
-            document.getElementById('euFormNumber').value = docNum;
-            document.getElementById('euFormTitle').value = titleStr;
-            document.getElementById('euFormDate').value = yearStr !== "no publication date/year" ? `11 May ${yearStr}` : "";
-            document.getElementById('euFormJournalOrEcli').value = identifier.includes('ECLI') ? identifier : `CELEX:${identifier}`;
-            document.getElementById('euHydrationForm').classList.remove('hidden');
-        }
-
-        function commitEUToSession() {
-            const type = document.getElementById('euFormType').value;
-            const number = document.getElementById('euFormNumber').value;
-            const title = document.getElementById('euFormTitle').value;
-            const date = document.getElementById('euFormDate').value;
-            const journalOrEcli = document.getElementById('euFormJournalOrEcli').value;
-            const pinpoint = document.getElementById('euFormPinpoint').value;
-
-            let year = "no publication date/year";
-            const yearMatch = date.match(/\d{4}/);
-            if (yearMatch) year = yearMatch[0];
-
-            let structuredObject = {
-                type: type,
-                uniqueHash: `eu-${type}-${number}-${year}`,
-                number: number,
-                title: title,
-                date: date,
-                journal: journalOrEcli,
-                pinpoint: pinpoint,
-                year: year,
-                authors: []
-            };
-
-            renderActiveCitations(structuredObject);
-        }
-
-        function computeCitationOutputs(item, previousItem = null) {
+        // 2. CITATION LOGIC (EI SPECIFIC)
+        function computeCitations(item, prev = null) {
             let footnote = "";
-            let bibliography = "";
+            let bib = "";
+            const isIbid = prev && prev.uniqueHash === item.uniqueHash;
 
-            let isSequentialIbid = false;
-            if (previousItem && previousItem.uniqueHash === item.uniqueHash) {
-                isSequentialIbid = true;
+            if (item.type === 'regulation' || item.type === 'directive') {
+                const isPost2015 = parseInt(item.year) >= 2015;
+                const typeName = item.type === 'regulation' ? 'Regulation' : 'Directive';
+                const prefix = (item.type === 'regulation' && !isPost2015) ? 'Council Regulation (EC) No ' : `${typeName} (EU) `;
+                
+                footnote = `${prefix}${item.number} of ${item.date} ${item.title}, ${item.journal}, (${item.pinpoint || 'Art./recital'}).`;
+                bib = footnote; // Legal acts match in both
+            } 
+            else if (item.type.startsWith('judgment')) {
+                const court = item.type.includes('ecj') ? 'ECJ' : 'EGC';
+                footnote = `${court}, Judgement of ${item.date}, Case ${item.number}, ${item.title}, ${item.journal}, para. ${item.pinpoint || '1'}.`;
+                bib = footnote;
+            }
+            else if (item.type === 'book') {
+                const authorFootnote = formatAuthors(item.authors, true);
+                footnote = isIbid ? `ibid., p. ${item.pageCited}.` : `${authorFootnote}, ${item.shortTitle ? item.shortTitle + ', ' : ''}p. ${item.pageCited}.`;
+                bib = `${formatAuthors(item.authors, false)}, ${item.title}, ${item.edition ? item.edition + ', ' : ''}${item.place}, ${item.year}.`;
+            }
+            else if (item.type === 'article') {
+                const authorFootnote = formatAuthors(item.authors, true);
+                footnote = isIbid ? `ibid., p. ${item.pageCited}.` : `${authorFootnote}, ${item.journal} ${item.year}, p. ${item.startPage}, ${item.pageCited}.`;
+                bib = `${formatAuthors(item.authors, false)}, ${item.title}, in: ${item.journalLong}, ${item.year}, p. ${item.startPage}-${item.endPage}.`;
             }
 
-            let hasMultipleWorksByAuthor = false;
-            if (item.type === 'book') {
-                const authorKey = item.authors.join('/');
-                const matches = sessionCitationHistory.filter(cit => cit.type === 'book' && cit.authors.join('/') === authorKey && cit.title !== item.title);
-                if (matches.length > 0) hasMultipleWorksByAuthor = true;
-            }
-
-            switch(item.type) {
-                case 'book':
-                    if (isSequentialIbid) {
-                        footnote = item.pageCited ? `ibid., p. ${item.pageCited}.` : `ibid.`;
-                    } else {
-                        const authorFn = formatAuthorsForFootnote(item.authors);
-                        if (hasMultipleWorksByAuthor && item.shortTitle) {
-                            footnote = `${authorFn}, ${item.shortTitle}, p. ${item.pageCited || '0'}.`;
-                        } else {
-                            footnote = `${authorFn}, p. ${item.pageCited || '0'}.`;
-                        }
-                    }
-                    bibliography = `${formatAuthorsForBibliography(item.authors)}, ${item.title}, ${item.edition ? item.edition + ', ' : ''}${item.place || 'no place of publishing'}, ${item.year || 'no publication date/year'}.`;
-                    break;
-
-                case 'commentary':
-                    footnote = isSequentialIbid ? `ibid.` : `${formatAuthorsForFootnote(item.authors)}, in: ${item.editors || 'Unknown'} (ed./eds.), ${item.title}, ${item.pinpoint || '§/Art., para.'}.`;
-                    bibliography = `${item.editors || 'Unknown'} (ed./eds.), ${item.title}, ${item.edition ? item.edition + ', ' : ''}${item.place || 'no place'}, ${item.year || 'no year'}.`;
-                    break;
-
-                case 'collective':
-                    footnote = isSequentialIbid ? `ibid.` : `${formatAuthorsForFootnote(item.authors)}, in: ${item.editors || 'Unknown'} (ed./eds.), p. ${item.startPage || '0'}, ${item.pageCited || '0'}.`;
-                    bibliography = `${formatAuthorsForBibliography(item.authors)}, ${item.essayTitle}, in: ${item.editors || 'Unknown'} (ed./eds.), ${item.title}, ${item.place || 'no place'}, ${item.year || 'no year'}, p. ${item.startPage || '0'}-${item.endPage || '0'}.`;
-                    break;
-
-                case 'article':
-                    const issueYearStr = `${item.issue ? item.issue + '/' : ''}${item.year || 'no year'}`;
-                    if (isSequentialIbid) {
-                        footnote = item.pageCited ? `ibid., p. ${item.pageCited}.` : `ibid.`;
-                    } else {
-                        footnote = `${formatAuthorsForFootnote(item.authors)}, ${item.journal || 'Journal'} ${issueYearStr}, p. ${item.startPage || '0'}, ${item.pageCited || '0'}.`;
-                    }
-                    bibliography = `${formatAuthorsForBibliography(item.authors)}, ${item.essayTitle}, in: ${item.journalLong || item.journal || 'Unknown Journal'}, ${issueYearStr}, p. ${item.startPage || '0'}-${item.endPage || '0'}.`;
-                    break;
-
-                case 'internet':
-                    footnote = isSequentialIbid ? `ibid.` : `${item.authors.length > 0 ? formatAuthorsForFootnote(item.authors) : item.owner || 'no author'}, ${item.title}, ${item.url}, (last accessed on ${item.accessDate || 'no access date'}).`;
-                    bibliography = `${item.authors.length > 0 ? formatAuthorsForBibliography(item.authors) : item.owner || 'no author'}, ${item.title}, ${item.sourceSite || 'Internet Source'}, ${item.year || 'no publication date/year'}, ${item.url} (last accessed on ${item.accessDate || 'no access date'}).`;
-                    break;
-
-                case 'un_doc':
-                    const authorPrefix = item.author ? `<i>${item.author}</i>, ` : '';
-                    footnote = `${authorPrefix}${item.number || 'Resolution Number'} ${item.title || 'Title'}, ${item.date || 'Date'}, UN Doc. ${item.docNumber || 'UN Doc.'}.`;
-                    bibliography = footnote; 
-                    break;
-
-                case 'regulation':
-                    const parsedRegYear = parseInt(item.year) || 0;
-                    footnote = (parsedRegYear < 2015 && parsedRegYear > 0)
-                        ? `Council Regulation (EC) No ${item.number} of ${item.date || 'Unknown Date'} ${item.title}, ${item.journal || 'OJ Reference'}${item.pinpoint ? ', (' + item.pinpoint + ')' : ''}.`
-                        : `Regulation (EU) ${item.number} of ${item.date || 'Unknown Date'} ${item.title}, ${item.journal || 'OJ Reference'}${item.pinpoint ? ', (' + item.pinpoint + ')' : ''}.`;
-                    bibliography = footnote;
-                    break;
-
-                case 'directive':
-                    const parsedDirYear = parseInt(item.year) || 0;
-                    footnote = (parsedDirYear < 2015 && parsedDirYear > 0)
-                        ? `Council Directive ${item.number} of ${item.date || 'Unknown Date'} ${item.title}, ${item.journal || 'OJ Reference'}${item.pinpoint ? ', (' + item.pinpoint + ')' : ''}.`
-                        : `Directive (EU) ${item.number} of ${item.date || 'Unknown Date'} ${item.title}, ${item.journal || 'OJ Reference'}${item.pinpoint ? ', (' + item.pinpoint + ')' : ''}.`;
-                    bibliography = footnote;
-                    break;
-
-                case 'judgment_ecj':
-                case 'judgment_egc':
-                    const courtPrefix = item.type === 'judgment_ecj' ? 'ECJ' : 'EGC';
-                    footnote = `${courtPrefix}, Judgement of ${item.date || 'Unknown Date'}, Case ${item.number || 'Case No'}, ${item.title || 'Parties'}, ${item.journal || 'ECLI Code'}${item.pinpoint ? ', para. ' + item.pinpoint : ''}.`;
-                    bibliography = footnote;
-                    break;
-
-                case 'eu_doc':
-                    footnote = `<i>European Commission</i>, ${item.title}, ${item.number || 'COM Code'}, p. ${item.pinpoint || '...'}.`;
-                    bibliography = footnote;
-                    break;
-
-                case 'oj_reference':
-                    footnote = `${item.journal || 'OJ Reference'}.`;
-                    bibliography = footnote;
-                    break;
-            }
-
-            return { footnote, bibliography };
+            return { footnote, bib };
         }
 
-        function renderActiveCitations(item) {
+        function formatAuthors(authors, forFootnote) {
+            if(!authors || authors.length === 0) return "No author";
+            if(forFootnote && authors.length > 3) return `<i>${authors[0].split(',')[0]}</i> et al.`;
+            const names = authors.map(a => forFootnote ? `<i>${a.split(',')[0]}</i>` : a);
+            return names.join(forFootnote ? '/' : ', ');
+        }
+
+        // State Management
+        function renderOutputs(item) {
             activeGeneratedCitation = item;
-            const previousItem = sessionCitationHistory.length > 0 ? sessionCitationHistory[sessionCitationHistory.length - 1] : null;
-            const computed = computeCitationOutputs(item, previousItem);
-
-            document.getElementById('footnoteOutput').innerHTML = computed.footnote;
-            document.getElementById('bibOutput').innerHTML = computed.bibliography;
-
-            const saveBtn = document.getElementById('saveToSessionBtn');
-            saveBtn.disabled = false;
-            saveBtn.className = "flex-1 bg-blue-800 hover:bg-blue-950 text-white font-white font-medium py-2 rounded-lg text-xs tracking-wide text-center transition uppercase cursor-pointer";
-        }
-
-        function clearActiveCitationOutput() {
-            activeGeneratedCitation = null;
-            document.getElementById('footnoteOutput').innerHTML = "No data loaded yet. Use an input panel to generate content.";
-            document.getElementById('bibOutput').innerHTML = "No data loaded yet. Use an input panel to generate content.";
-            
-            const saveBtn = document.getElementById('saveToSessionBtn');
-            saveBtn.disabled = true;
-            saveBtn.className = "flex-1 bg-gray-200 text-gray-400 font-medium py-2 rounded-lg text-xs tracking-wide text-center transition uppercase cursor-not-allowed";
+            const prev = sessionCitationHistory.length > 0 ? sessionCitationHistory[sessionCitationHistory.length - 1] : null;
+            const res = computeCitations(item, prev);
+            document.getElementById('footnoteOutput').innerHTML = res.footnote;
+            document.getElementById('bibOutput').innerHTML = res.bib;
+            document.getElementById('saveToSessionBtn').disabled = false;
+            document.getElementById('saveToSessionBtn').classList.remove('bg-gray-200', 'text-gray-400', 'cursor-not-allowed');
+            document.getElementById('saveToSessionBtn').classList.add('bg-blue-800', 'text-white', 'cursor-pointer');
         }
 
         function appendActiveToSessionList() {
-            if(!activeGeneratedCitation) return;
             sessionCitationHistory.push(activeGeneratedCitation);
-            clearActiveCitationOutput();
-            rebuildMasterBibliographyUI();
+            rebuildMasterBib();
         }
 
-        function clearSessionMasterList() {
-            if(confirm("Are you sure you want to clear all citations out of active working memory?")) {
-                sessionCitationHistory = [];
-                rebuildMasterBibliographyUI();
-                clearActiveCitationOutput();
-            }
-        }
-
-        function rebuildMasterBibliographyUI() {
+        function rebuildMasterBib() {
             const container = document.getElementById('masterBibliographyContainer');
-            if (sessionCitationHistory.length === 0) {
-                container.innerHTML = "No active citations committed to the master session pool yet.";
-                return;
-            }
-
-            let processedItems = [];
-            for(let i = 0; i < sessionCitationHistory.length; i++) {
-                const current = sessionCitationHistory[i];
-                processedItems.push({ raw: current, bibString: computeCitationOutputs(current, i > 0 ? sessionCitationHistory[i - 1] : null).bibliography });
-            }
-
-            processedItems.sort((a, b) => a.bibString.localeCompare(b.bibString));
-
-            let html = `<ol class="list-decimal pl-5 space-y-2 text-gray-800 font-normal">`;
-            processedItems.forEach(item => {
-                html += `<li class="pl-2 border-b border-gray-50 pb-1">${item.bibString}</li>`;
-            });
-            html += `</ol>`;
-            container.innerHTML = html;
+            const items = sessionCitationHistory.map((item, idx) => ({
+                str: computeCitations(item, idx > 0 ? sessionCitationHistory[idx-1] : null).bib,
+                sortKey: item.authors?.[0] || item.title
+            }));
+            items.sort((a, b) => a.sortKey.localeCompare(b.sortKey));
+            container.innerHTML = `<ol class="list-decimal pl-5">${items.map(i => `<li class="mb-1">${i.str}</li>`).join('')}</ol>`;
         }
 
-        function copyMasterBibliographyText() {
-            if (sessionCitationHistory.length === 0) return;
-            
-            let processedStrings = [];
-            for(let i = 0; i < sessionCitationHistory.length; i++) {
-                processedStrings.push(computeCitationOutputs(sessionCitationHistory[i], i > 0 ? sessionCitationHistory[i - 1] : null).bibliography);
-            }
-            
-            processedStrings.sort((a, b) => a.localeCompare(b));
-            
-            const htmlOutput = `<ol>${processedStrings.map(s => `<li>${s}</li>`).join('')}</ol>`;
-            const plainTextOutput = processedStrings.map((s, idx) => `${idx + 1}. ${s.replace(/<[^>]*>/g, '')}`).join('\n');
-            
-            const blobHtml = new Blob([htmlOutput], { type: 'text/html' });
-            const blobText = new Blob([plainTextOutput], { type: 'text/plain' });
-            const data = [new ClipboardItem({ 'text/html': blobHtml, 'text/plain': blobText })];
-            
-            navigator.clipboard.write(data).then(() => {
-                alert("Complete alphabetical bibliography copied successfully.");
+        function commitEUToSession() {
+            const date = document.getElementById('euFormDate').value;
+            renderOutputs({
+                type: document.getElementById('euFormType').value,
+                uniqueHash: 'eu-' + document.getElementById('euFormNumber').value,
+                number: document.getElementById('euFormNumber').value,
+                title: document.getElementById('euFormTitle').value,
+                date: date,
+                year: date.split('-')[0],
+                journal: document.getElementById('euFormJournalOrEcli').value,
+                pinpoint: document.getElementById('euFormPinpoint').value
             });
         }
 
-        // OPTION 1 LOGIC ENGINE: ACADEMIC SEARCH VIA OPENALEX
-        async function performAcademicSearch() {
-            const query = document.getElementById('academicQuery').value;
-            const fontDiv = document.getElementById('academicResults');
-            if(!query || query.trim() === "") return;
-
-            fontDiv.innerHTML = "<p class='text-xs text-gray-500 animate-pulse'>Querying OpenAlex Database...</p>";
-            fontDiv.classList.remove('hidden');
-            document.getElementById('academicPinpointRow').classList.add('hidden');
-
-            try {
-                const response = await fetch(`https://api.openalex.org/works?search=${encodeURIComponent(query)}&per_page=5`);
-                const data = await response.json();
-                const items = data.results;
-                temporaryAcademicSearchResults = items;
-
-                if(!items || items.length === 0) {
-                    fontDiv.innerHTML = "<p class='text-xs text-red-600'>No matching entries isolated. Verify criteria parameters or entry syntax.</p>";
-                    return;
-                }
-
-                let html = "";
-                items.forEach((item, index) => {
-                    const title = item.title || item.display_name || 'Untitled Resource';
-                    const authorStr = item.authorships ? item.authorships.map(a => a.author.display_name).join(' / ') : 'Unknown Authors';
-                    html += `
-                        <div onclick="selectAcademicResult(${index})" id="acad-res-${index}" class="p-3 border border-gray-200 rounded-lg text-xs hover:bg-blue-50 cursor-pointer transition text-gray-700">
-                            <span class="font-bold text-blue-900 block">${title}</span>
-                            <span class="block text-gray-600 mt-0.5">Authors: ${authorStr}</span>
-                        </div>
-                    `;
-                });
-                fontDiv.innerHTML = html;
-            } catch (err) { fontDiv.innerHTML = "<p class='text-xs text-red-600'>API Error. Please use manual fallback forms.</p>"; }
-        }
-
-        function selectAcademicResult(index) {
-            temporaryAcademicSearchResults.forEach((_, idx) => {
-                const el = document.getElementById(`acad-res-${idx}`);
-                if (el) el.className = "p-3 border border-gray-200 rounded-lg text-xs hover:bg-blue-50 cursor-pointer transition text-gray-700";
-            });
-            document.getElementById(`acad-res-${index}`).className = "p-3 border-2 border-blue-600 bg-blue-50 rounded-lg text-xs font-medium cursor-pointer transition text-gray-800";
-            currentlySelectedAcademicItem = temporaryAcademicSearchResults[index];
-            
-            document.getElementById('academicPinpointRow').classList.remove('hidden');
-            const extraFields = document.getElementById('academicArticleExtraFields');
-            if (currentlySelectedAcademicItem.type === 'journal-article' || currentlySelectedAcademicItem.type === 'article') {
-                extraFields.classList.remove('hidden');
-                const fullJournal = currentlySelectedAcademicItem.primary_location?.source?.display_name || '';
-                document.getElementById('academicJournalFull').value = fullJournal;
-                document.getElementById('academicJournalAbbrev').value = generateAbbreviation(fullJournal);
-            } else { extraFields.classList.add('hidden'); }
-        }
-
-        function commitSelectedAcademicToSession() {
-            if(!currentlySelectedAcademicItem) return;
-            const item = currentlySelectedAcademicItem;
-            const pageCited = document.getElementById('academicPageCited').value;
-
-            let authors = [];
-            if (item.authorships) {
-                authors = item.authorships.map(a => {
-                    const name = a.author.display_name.trim().split(' ');
-                    if (name.length > 1) { const last = name.pop(); return `${last}, ${name.join(' ')}`; }
-                    return a.author.display_name;
-                });
-            }
-
-            const title = item.title || item.display_name || 'Unknown Title';
-            const year = item.publication_year ? String(item.publication_year) : '';
-            
-            let structuredObject = {
-                uniqueHash: `academic-${title}-${year}`,
-                authors: authors, title: title, year: year, pageCited: pageCited, edition: "", place: 'no place of publishing'
-            };
-
-            if (item.type === 'journal-article' || item.type === 'article') {
-                structuredObject.type = 'article';
-                structuredObject.essayTitle = title;
-                structuredObject.journal = document.getElementById('academicJournalAbbrev').value || generateAbbreviation(item.primary_location?.source?.display_name);
-                structuredObject.journalLong = document.getElementById('academicJournalFull').value || item.primary_location?.source?.display_name || 'Unknown Journal';
-                structuredObject.startPage = item.biblio?.first_page || '0';
-                structuredObject.endPage = item.biblio?.last_page || '0';
-                structuredObject.issue = item.biblio?.issue || '';
-            } else { structuredObject.type = 'book'; }
-
-            renderActiveCitations(structuredObject);
-        }
-
-        // OPTION 3 LOGIC ENGINE: DYNAMIC MANUAL INPUT GENERATION
+        // Helper: Toggle Manual
         function toggleManualTypeForm() {
             const type = document.getElementById('manualTypeSelector').value;
             const container = document.getElementById('manualDynamicFields');
-            let html = "";
-
-            switch(type) {
-                case 'book':
-                    html = `
-                        <div>
-                            <label class="block text-xs text-gray-600">Author(s) (Format: Surname, First Name; Separate multiple with semicolon ';'):</label>
-                            <input type="text" id="mAuthors" placeholder="e.g., Crawford, James; Brownlie, Ian" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-600">Complete Volume Title:</label>
-                            <input type="text" id="mTitle" placeholder="e.g., Brownlie's Principles of Public International Law" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                            <div class="md:col-span-2">
-                                <label class="block text-xs text-gray-600">Short Citation Keyword Title:</label>
-                                <input type="text" id="mShortTitle" placeholder="e.g., Brownlie's Principles" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-600">Edition:</label>
-                                <input type="text" id="mEdition" placeholder="e.g., 8th ed." class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-600">Year:</label>
-                                <input type="text" id="mYear" placeholder="e.g., 2012" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs text-gray-600">Publication City Place:</label>
-                                <input type="text" id="mPlace" placeholder="e.g., Oxford" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-600">Cited Location Target Page:</label>
-                                <input type="text" id="mPageCited" placeholder="e.g., 200" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                        </div>
-                    `;
-                    break;
-
-                case 'commentary':
-                    html = `
-                        <div>
-                            <label class="block text-xs text-gray-600">Author Name (Footnote citation target):</label>
-                            <input type="text" id="mAuthors" placeholder="e.g., Schmalenbach" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-600">Editor Volume Contributors (Format: Last Name/Last Name):</label>
-                            <input type="text" id="mEditors" placeholder="e.g., Dörr/Schmalenbach" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-600">Name of Commentary:</label>
-                            <input type="text" id="mTitle" placeholder="e.g., Vienna Convention on the Law of Treaties" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                            <div class="md:col-span-2">
-                                <label class="block text-xs text-gray-600">Target Legal Unit (§/Art., para.):</label>
-                                <input type="text" id="mPinpoint" placeholder="e.g., Art. 2 VCLT, para. 5" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-600">Edition:</label>
-                                <input type="text" id="mEdition" placeholder="e.g., A Commentary" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-600">Year:</label>
-                                <input type="text" id="mYear" placeholder="e.g., 2012" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-600">Publication City / Place:</label>
-                            <input type="text" id="mPlace" placeholder="e.g., Berlin/Heidelberg" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        </div>
-                    `;
-                    break;
-
-                case 'collective':
-                    html = `
-                        <div>
-                            <label class="block text-xs text-gray-600">Author(s) of the specific Essay:</label>
-                            <input type="text" id="mAuthors" placeholder="e.g., Bungenberg, Marc" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-600">Title of the individual Essay:</label>
-                            <input type="text" id="mEssayTitle" placeholder="e.g., Evolution of Investment Law Protection..." class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-600">Volume Editors Group:</label>
-                            <input type="text" id="mEditors" placeholder="e.g., Bungenberg, Marc/Hobe, Stephan" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-600">Title of Cumulative Collective Volume:</label>
-                            <input type="text" id="mTitle" placeholder="e.g., Permanent Sovereignty over Natural Resources" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
-                            <div>
-                                <label class="block text-xs text-gray-600">Publication Place:</label>
-                                <input type="text" id="mPlace" placeholder="e.g., Switzerland" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-600">Year:</label>
-                                <input type="text" id="mYear" placeholder="e.g., 2015" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-600">Start Page:</label>
-                                <input type="text" id="mStartPage" placeholder="e.g., 125" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-600">End Page:</label>
-                                <input type="text" id="mEndPage" placeholder="e.g., 140" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-600">Cited Location Target Page:</label>
-                            <input type="text" id="mPageCited" placeholder="e.g., 128" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        </div>
-                    `;
-                    break;
-
-                case 'article':
-                    html = `
-                        <div>
-                            <label class="block text-xs text-gray-600">Essay Author Name:</label>
-                            <input type="text" id="mAuthors" placeholder="e.g., Chi, Manjiao" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-600">Title of individual Essay:</label>
-                            <input type="text" id="mEssayTitle" placeholder="e.g., 'Exhaustible Natural Resource' in WTO Law" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs text-gray-600">Journal Abbreviation (for Footnote):</label>
-                                <input type="text" id="mJournal" placeholder="e.g., JWT" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-600">Full Journal Name (for Bibliography):</label>
-                                <input type="text" id="mJournalLong" placeholder="e.g., Journal of World Trade" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
-                            <div>
-                                <label class="block text-xs text-gray-600">Year:</label>
-                                <input type="text" id="mYear" placeholder="e.g., 2014" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-600">Issue / Vol No:</label>
-                                <input type="text" id="mIssue" placeholder="e.g., 5" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-600">Start Page:</label>
-                                <input type="text" id="mStartPage" placeholder="e.g., 939" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-600">End Page:</label>
-                                <input type="text" id="mEndPage" placeholder="e.g., 966" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-600">Cited Location Target Page:</label>
-                            <input type="text" id="mPageCited" placeholder="e.g., 941" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        </div>
-                    `;
-                    break;
-
-                case 'internet':
-                    html = `
-                        <div>
-                            <label class="block text-xs text-gray-600">Author Name (Leave empty if unspecified):</label>
-                            <input type="text" id="mAuthors" placeholder="e.g., Klawitter, Nils" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-600">Corporate Publisher Website Owner (Fallback if no author):</label>
-                            <input type="text" id="mOwner" placeholder="e.g., Spiegel online" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-600">Title of Web Article:</label>
-                            <input type="text" id="mTitle" placeholder="e.g., A Tangle of Conflicts: The Dirty Business of Palm Oil" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-600">Complete Document Destination URL Link:</label>
-                            <input type="text" id="mUrl" placeholder="http://www.spiegel.de/..." class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                            <div>
-                                <label class="block text-xs text-gray-600">Publication Date:</label>
-                                <input type="text" id="mYear" placeholder="e.g., 2 May 2016" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                            <div class="md:col-span-2">
-                                <label class="block text-xs text-gray-600">Date of Last Access Context:</label>
-                                <input type="text" id="mAccessDate" placeholder="e.g., 29/11/2016" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                        </div>
-                    `;
-                    break;
-
-                case 'un_doc':
-                    html = `
-                        <div>
-                            <label class="block text-xs text-gray-600">Author Institutional Organ (Optional):</label>
-                            <input type="text" id="mAuthor" placeholder="e.g., UNGA" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-600">Resolution or Decision Classification Number:</label>
-                            <input type="text" id="mNumber" placeholder="e.g., Res 832 (IX)" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-600">Official Title:</label>
-                            <input type="text" id="mTitle" placeholder="e.g., International assistance to refugees..." class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs text-gray-600">Official Publication Date:</label>
-                                <input type="text" id="mDate" placeholder="e.g., 21/10/1954" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-600">UN Document Reference Number Registry:</label>
-                                <input type="text" id="mDocNumber" placeholder="e.g., UN Doc. A/RES/832(IX)" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
-                            </div>
-                        </div>
-                    `;
-                    break;
-            }
+            let html = `<div><label class="block text-xs">Author(s) (Surname, First Name; ...)</label><input type="text" id="mAuthors" class="w-full border p-2 text-sm"></div>`;
+            html += `<div><label class="block text-xs">Title</label><input type="text" id="mTitle" class="w-full border p-2 text-sm"></div>`;
+            if(type === 'book') html += `<div><label class="block text-xs">Place / Year / Page</label><div class="flex gap-2"><input id="mPlace" placeholder="Place" class="w-1/3 border p-2 text-sm"><input id="mYear" placeholder="Year" class="w-1/3 border p-2 text-sm"><input id="mPage" placeholder="Page" class="w-1/3 border p-2 text-sm"></div></div>`;
             container.innerHTML = html;
         }
 
         function commitManualToSession() {
-            const type = document.getElementById('manualTypeSelector').value;
-            const authorsRaw = document.getElementById('mAuthors') ? document.getElementById('mAuthors').value : '';
-            const title = document.getElementById('mTitle') ? document.getElementById('mTitle').value : '';
-            const year = document.getElementById('mYear') ? document.getElementById('mYear').value : '';
-            const place = document.getElementById('mPlace') ? document.getElementById('mPlace').value : '';
-            const pageCited = document.getElementById('mPageCited') ? document.getElementById('mPageCited').value : '';
-            const edition = document.getElementById('mEdition') ? document.getElementById('mEdition').value : '';
-
-            let item = {
-                type: type, uniqueHash: `manual-${type}-${title}-${year}`,
-                authors: parseAuthorsString(authorsRaw), title: title, year: year, place: place, pageCited: pageCited, edition: edition
-            };
-
-            if (type === 'book') { item.shortTitle = document.getElementById('mShortTitle').value || title.substring(0, 20); }
-            else if (type === 'commentary') { item.editors = document.getElementById('mEditors').value; item.pinpoint = document.getElementById('mPinpoint').value; }
-            else if (type === 'collective') { item.essayTitle = document.getElementById('mEssayTitle').value; item.editors = document.getElementById('mEditors').value; item.startPage = document.getElementById('mStartPage').value; item.endPage = document.getElementById('mEndPage').value; }
-            else if (type === 'article') { item.essayTitle = document.getElementById('mEssayTitle').value; item.journal = document.getElementById('mJournal').value; item.journalLong = document.getElementById('mJournalLong').value; item.issue = document.getElementById('mIssue').value; item.startPage = document.getElementById('mStartPage').value; item.endPage = document.getElementById('mEndPage').value; }
-            else if (type === 'internet') { item.owner = document.getElementById('mOwner').value; item.url = document.getElementById('mUrl').value; item.accessDate = document.getElementById('mAccessDate').value; item.sourceSite = item.owner; }
-            else if (type === 'un_doc') { item.author = document.getElementById('mAuthor').value; item.number = document.getElementById('mNumber').value; item.date = document.getElementById('mDate').value; item.docNumber = document.getElementById('mDocNumber').value; }
-
-            renderActiveCitations(item);
+            const authors = document.getElementById('mAuthors').value.split(';').map(s => s.trim());
+            renderOutputs({
+                type: document.getElementById('manualTypeSelector').value,
+                uniqueHash: 'man-' + document.getElementById('mTitle').value,
+                authors: authors,
+                title: document.getElementById('mTitle').value,
+                place: document.getElementById('mPlace')?.value || "",
+                year: document.getElementById('mYear')?.value || "",
+                pageCited: document.getElementById('mPage')?.value || ""
+            });
         }
     </script>
 </body>
